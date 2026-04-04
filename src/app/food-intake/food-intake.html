@@ -1,0 +1,219 @@
+<!-- Page header -->
+<div class="page-header">
+  <h1 class="page-title">Food Intake</h1>
+  <p class="page-subtitle">Track your daily food consumption and monitor fiber intake.</p>
+</div>
+
+<div class="content-area">
+
+  <!-- Stats strip -->
+  @if (foodIntakes().length > 0) {
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <div class="card" style="padding:16px 24px; flex:1; min-width:160px;">
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.7px; color:var(--text-muted); margin-bottom:4px;">Entries today</div>
+        <div style="font-family:'Sora',sans-serif; font-size:28px; font-weight:700; color:var(--text-primary);">{{ todayIntakes().length }}</div>
+      </div>
+      <div class="card" style="padding:16px 24px; flex:1; min-width:160px;">
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.7px; color:var(--text-muted); margin-bottom:4px;">Today's total fiber (g)</div>
+        <div style="font-family:'Sora',sans-serif; font-size:28px; font-weight:700; color:#10b981;">{{ todayFiberIntake() | number:'1.01-99' }}</div>
+      </div>
+    </div>
+  }
+
+  <!-- Intake table card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+          <path d="M7 2v20"/>
+          <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+        </svg>
+      </div>
+      <div>
+        <p class="card-title">Today's Intake</p>
+        <p class="card-desc">{{ todayIntakes().length }} entr{{ todayIntakes().length === 1 ? 'y' : 'ies' }} recorded</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Food</th>
+            <th>Intake Size</th>
+            <th>Fiber Intake (g)</th>
+            <th>Date</th>
+            <th style="width:120px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (intake of todayIntakes(); track intake.id) {
+            <tr>
+              <td style="font-weight:500;">{{ intake.food.name }}</td>
+              <td>{{ intake.intakeSize }} {{ intake.food.unitOfMeasurement }}</td>
+              <td><span class="badge badge-green">{{ intake.fiberIntake | number:'1.01-99' }}</span></td>
+              <td style="color:var(--text-secondary); font-size:12.5px;">{{ intake.createdAt | date:'MMM d, y' }}</td>
+              <td>
+                <div class="btn-row">
+                  <button class="btn btn-ghost" (click)="updateFoodIntake(intake)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                  </button>
+                  <button class="btn btn-danger-ghost" (click)="deleteFoodIntake(intake.id)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                      <path d="M10 11v6"/>
+                      <path d="M14 11v6"/>
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px; display:block; opacity:.3;">
+                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/>
+                    <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+                  </svg>
+                  No intake entries yet — add one below.
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Add / Edit form -->
+    <div class="form-section">
+      <p class="form-section-title">{{ isEditing ? 'Edit Entry' : 'Add New Entry' }}</p>
+      <form [formGroup]="foodIntakeForm" (ngSubmit)="submitFoodIntake()">
+        <input type="hidden" formControlName="id"/>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="foodId">Food</label>
+            <select id="foodId" formControlName="foodId">
+              <option [ngValue]="null" disabled>Select a food…</option>
+              @for (fact of foodFacts(); track fact.id) {
+                <option [ngValue]="fact.id">{{ fact.name }} ({{ fact.unitOfMeasurement }})</option>
+              }
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="intakeSize">Intake Size</label>
+            <input id="intakeSize" type="number" formControlName="intakeSize" placeholder="e.g. 150" min="1"/>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit" [disabled]="foodIntakeForm.invalid">
+            {{ isEditing ? 'Save Changes' : 'Add Entry' }}
+          </button>
+          @if (isEditing) {
+            <button class="btn btn-secondary" type="button" (click)="resetForm()">Cancel</button>
+          }
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── BROWSE BY DATE CARD ────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+      <div style="flex:1;">
+        <p class="card-title">Browse by Date</p>
+        <p class="card-desc">View entries logged on any past day</p>
+      </div>
+    </div>
+ 
+    <!-- Date picker row -->
+    <div style="padding:16px 24px; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; background:var(--bg-surface-2); transition:background .3s ease, border-color .3s ease;">
+      <div class="form-field" style="flex:1; min-width:200px; max-width:280px;">
+        <label for="historyDate">Select date</label>
+        <input
+          id="historyDate"
+          type="date"
+          [max]="today"
+          [ngModel]="selectedDate()" (ngModelChange)="setSelectedDate($event)"
+          style="cursor:pointer;"
+        />
+      </div>
+ 
+      @if (selectedDate() && selectedDateIntakes().length > 0) {
+        <div style="display:flex; gap:10px; align-items:center; padding-bottom:1px;">
+          <span style="padding:4px 12px; border-radius:6px; background:var(--bg-surface); border:1px solid var(--border); font-size:12px; color:var(--text-secondary);">
+            <span style="font-weight:600; color:var(--text-primary);">{{ selectedDateIntakes().length }}</span>
+            entr{{ selectedDateIntakes().length === 1 ? 'y' : 'ies' }}
+          </span>
+          <span style="padding:4px 12px; border-radius:6px; background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.2); font-size:12px; color:#10b981; font-weight:600;">
+            {{ selectedDateFiberIntake() | number:'1.1-1' }}g fiber
+          </span>
+        </div>
+      }
+    </div>
+ 
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Food</th>
+            <th>Intake Size</th>
+            <th>Fiber Intake (g)</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (!selectedDate()) {
+            <tr>
+              <td colspan="3">
+                <div class="empty-state">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px; display:block; opacity:.3;">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  Pick a date above to view entries.
+                </div>
+              </td>
+            </tr>
+          } @else {
+            @for (intake of selectedDateIntakes(); track intake.id) {
+              <tr>
+                <td style="font-weight:500;">{{ intake.food.name }}</td>
+                <td>{{ intake.intakeSize }} {{ intake.food.unitOfMeasurement }}</td>
+                <td><span class="badge badge-green">{{ intake.fiberIntake | number:'1.01-99' }}</span></td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="3">
+                  <div class="empty-state">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 8px; display:block; opacity:.3;">
+                      <circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                    No entries found for {{ selectedDate() | date:'MMMM d, y' }}.
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

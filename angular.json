@@ -22,7 +22,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/favicon.ico",
+              "src/manifest.webmanifest",
+              "src/assets"
             ],
             "styles": [
               "src/styles.css"
@@ -58,7 +61,7 @@
               "sourceMap": true
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "production"          
         },
         "serve": {
           "builder": "@angular/build:dev-server",
