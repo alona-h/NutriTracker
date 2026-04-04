@@ -1,9 +1,37 @@
-<div class="app-shell">
-  <!-- Left navigation sidebar -->
-  <app-sidebar [isDark]="isDark" (themeToggle)="toggleTheme()" />
+<div class="app-shell" [class.sidebar-open]="sidebarOpen">
 
-  <!-- Main scrollable content area -->
+  <!-- ── Sidebar overlay backdrop (mobile only) ─────────────── -->
+  <div class="sidebar-backdrop" (click)="sidebarOpen = false"></div>
+
+  <!-- ── Left navigation sidebar ───────────────────────────── -->
+  <app-sidebar
+    [isDark]="isDark"
+    (themeToggle)="toggleTheme()"
+    (closeSidebar)="sidebarOpen = false"
+  />
+
+  <!-- ── Main scrollable content area ──────────────────────── -->
   <main class="app-main">
+
+    <!-- Mobile-only topbar (hidden on desktop via CSS) -->
+    <div class="mobile-topbar">
+      <button
+        class="hamburger"
+        (click)="sidebarOpen = !sidebarOpen"
+        type="button"
+        aria-label="Toggle navigation"
+        [attr.aria-expanded]="sidebarOpen"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <span class="mobile-logo-text">
+        <img src="assets/icons/icon-96x96.png" alt="NT logo" width="28" height="28" style="display:block;"/>
+      </span>
+    </div>
+
     <router-outlet />
   </main>
+
 </div>

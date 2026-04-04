@@ -11,6 +11,7 @@ import { NgClass } from '@angular/common';
 export class SidebarComponent {
   @Input() isDark = false;
   @Output() themeToggle = new EventEmitter<void>();
+  @Output() closeSidebar = new EventEmitter<void>();
 
   navItems = [
     {

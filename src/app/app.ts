@@ -10,6 +10,7 @@ import { SidebarComponent } from './sidebar/sidebar';
 })
 export class App implements OnInit {
   isDark = false;
+  sidebarOpen = false;
 
   ngOnInit() {
     // Restore theme preference
