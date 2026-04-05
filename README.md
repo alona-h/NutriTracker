@@ -1,59 +1,66 @@
 # NutriTracker
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.2.
+A lightweight Angular PWA for tracking daily food intake and fiber consumption.
 
-## Development server
+---
 
-To start a local development server, run:
+## Features
 
-```bash
-ng serve
-```
+- **Food Facts Database** — maintain a personal nutrition database with food names, serving sizes, units of measurement, and fiber content per serving.
+- **Food Intake Tracking** — log daily food consumption and automatically calculate fiber intake based on portion size relative to the serving defined in the database.
+- **Today's Summary** — a stats strip shows the number of entries logged today and the total fiber consumed.
+- **Browse by Date** — a date picker lets you review entries and fiber totals for any past day.
+- **Dark / Light Mode** — a sidebar toggle switches between dark and light themes with smooth CSS transitions.
+- **PWA support** — includes a web manifest and app icons for installation on mobile and desktop.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Tech Stack
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+| Layer | Technology |
+|---|---|
+| Framework | Angular (standalone components, signals) |
+| Styling | Tailwind CSS v4 + CSS custom properties |
+| Fonts | Plus Jakarta Sans, Sora (Google Fonts) |
+| Forms | Angular Reactive Forms |
+| Routing | Angular Router with `routerLinkActive` |
+| PWA | Web App Manifest |
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Pages
 
-```bash
-ng generate --help
-```
+### Food Facts (`/food-facts`)
+Displays a table of all foods in the nutrition database. Each row shows the food name, serving size, unit, and fiber content. Inline add and edit forms allow managing entries without leaving the page.
 
-## Building
+### Food Intake (`/food-intake`)
+Shows today's logged entries with a running fiber total. An inline form lets you select a food from the database and enter a portion size — fiber intake is calculated automatically. A separate "Browse by Date" card lets you view historical entries.
 
-To build the project run:
+---
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Getting Started
 
 ```bash
-ng e2e
+# Install dependencies
+npm install
+
+# Start the development server
+npm run start
+
+# Build for production
+npm run build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+The app will be available at `http://localhost:4200`.
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Theme
+
+The app uses CSS custom properties for theming. The dark/light mode toggle lives in the sidebar footer and applies a `.dark` class to the document root, switching all surface, border, and text colors via the token definitions in `styles.css`.
+
+---
+
+## PWA
+
+A `manifest.webmanifest` and app icons (including `apple-touch-icon`) are included, making the app installable as a Progressive Web App on both iOS and Android.
