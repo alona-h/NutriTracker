@@ -1,0 +1,50 @@
+<div class="auth-gate">
+  <div class="auth-card">
+
+    <!-- Brand -->
+    <div class="auth-brand">
+      <div class="auth-logo-wrap">
+        <img src="assets/icons/icon-96x96.png" alt="NT" width="40" height="40"/>
+      </div>
+      <div class="auth-brand-text">NutriTracker</div>
+      <div class="auth-brand-sub">My Life Tracker</div>
+    </div>
+
+    <!-- Heading -->
+    <h1 class="auth-heading">Enter your access code</h1>
+    <p class="auth-subheading">Your code is assigned by your administrator.</p>
+
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="auth-field">
+        <input
+          id="code"
+          type="text"
+          formControlName="code"
+          placeholder="e.g. ALICE42"
+          autocomplete="off"
+          autocapitalize="characters"
+          class="auth-input"
+          [class.auth-input--error]="error()"
+        />
+        @if (error()) {
+          <p class="auth-error">{{ error() }}</p>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="auth-submit"
+        [disabled]="form.invalid || isLoading()"
+      >
+        @if (isLoading()) {
+          <span class="auth-spinner"></span>
+          Verifying…
+        } @else {
+          Continue
+        }
+      </button>
+    </form>
+
+  </div>
+</div>

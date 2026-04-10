@@ -2,8 +2,8 @@ import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Supabase } from '../services/supabase';
+import { AuthService } from '../services/auth';
 import { Utils } from '../utils/utils';
-
 
 @Component({
   selector: 'app-food-intake',
@@ -14,28 +14,35 @@ import { Utils } from '../utils/utils';
 export class FoodIntakeComponent implements OnInit {
   private fb = inject(FormBuilder);
   private supabase = inject(Supabase);
+  private auth = inject(AuthService);
 
   foodIntakes = signal<FoodIntake[]>([]);
   foodFacts = signal<FoodFact[]>([]);
-
   foodIntakeForm!: FormGroup;
   isEditing = false;
 
   readonly today = Utils.toDateString(new Date());
   readonly yesterday = Utils.toDateString(new Date(Date.now() - 86400000));
   selectedDate = signal<string>(this.yesterday);
-  
-  todayIntakes = computed(() => this.foodIntakes().filter(i => Utils.toDateString(i.createdAt) === this.today));
-  selectedDateIntakes = computed(() =>{
+
+  todayIntakes = computed(() =>
+    this.foodIntakes().filter(i => Utils.toDateString(i.createdAt) === this.today)
+  );
+
+  selectedDateIntakes = computed(() => {
     if (!this.selectedDate()) return [];
-    return this.foodIntakes().filter(i => Utils.toDateString(i.createdAt) === this.selectedDate());
+    return this.foodIntakes().filter(
+      i => Utils.toDateString(i.createdAt) === this.selectedDate()
+    );
   });
 
-  todayFiberIntake = computed(() => 
+  todayFiberIntake = computed(() =>
     this.todayIntakes().reduce((sum, i) => {
-    const ratio = i.intakeSize / i.food.servingSize;
-    return sum + i.food.fiber * ratio;
-  }, 0));
+      const ratio = i.intakeSize / i.food.servingSize;
+      return sum + i.food.fiber * ratio;
+    }, 0)
+  );
+
   selectedDateFiberIntake = computed(() => {
     if (!this.selectedDate()) return 0;
     return this.selectedDateIntakes().reduce((sum, i) => {
@@ -44,31 +51,26 @@ export class FoodIntakeComponent implements OnInit {
     }, 0);
   });
 
-  ngOnInit() {
-    this.loadFoodIntakes();
+  private get userId(): number {
+    return this.auth.currentUser()!.id;
+  }
 
+  ngOnInit(): void {
+    this.loadData();
     this.buildForm();
   }
 
-  loadFoodIntakes() {
-    console.log('Loading food intakes');
-    this.supabase.getFoodIntakes()
-      .then(data => {
-        this.foodIntakes.set(data);
-        console.log('Food intakes fetched successfully:', data);
-      })
-      .catch(error => console.error('Error fetching food intakes:', error));
+  loadData(): void {
+    this.supabase.getFoodIntakes(this.userId)
+      .then(data => this.foodIntakes.set(data))
+      .catch(err => console.error('Error fetching food intakes:', err));
 
     this.supabase.getFoodFacts()
-      .then(data => {
-        this.foodFacts.set(data);
-        console.log('Food facts fetched successfully:', data);
-      })
-      .catch(error => console.error('Error fetching food facts:', error));
+      .then(data => this.foodFacts.set(data))
+      .catch(err => console.error('Error fetching food facts:', err));
   }
 
-
-  private buildForm(intake?: FoodIntake) {
+  private buildForm(intake?: FoodIntake): void {
     this.foodIntakeForm = this.fb.group({
       id: [intake?.id ?? null],
       foodId: [intake?.food.id ?? null, Validators.required],
@@ -76,27 +78,21 @@ export class FoodIntakeComponent implements OnInit {
     });
   }
 
-  submitFoodIntake() {
+  submitFoodIntake(): void {
     if (this.foodIntakeForm.invalid) return;
-    var foodIntakeFormValue: FoodIntake = this.foodIntakeForm.value as FoodIntake;
-    foodIntakeFormValue.fiberIntake = foodIntakeFormValue.intakeSize * 
-      (this.foodFacts().find(f => f.id === foodIntakeFormValue.foodId)?.fiber ?? 0) /
-      (this.foodFacts().find(f => f.id === foodIntakeFormValue.foodId)?.servingSize ?? 1);
 
-    console.log('Submitting food intake:', foodIntakeFormValue);
-      this.supabase.submitFoodIntake(this.isEditing, foodIntakeFormValue)
-        .then(() => {
-          console.log('Food intake submitted successfully');
-          this.loadFoodIntakes(); // Refresh the list after submission
-          this.buildForm();
-          this.isEditing = false;
-        });
-    
+    const value = this.foodIntakeForm.value as FoodIntake;
+    const fact = this.foodFacts().find(f => f.id === value.foodId);
+    value.fiberIntake = value.intakeSize * (fact?.fiber ?? 0) / (fact?.servingSize ?? 1);
 
-    this.resetForm();
+    this.supabase.submitFoodIntake(this.isEditing, value, this.userId)
+      .then(() => {
+        this.loadData();
+        this.resetForm();
+      });
   }
 
-  updateFoodIntake(intake: FoodIntake) {
+  updateFoodIntake(intake: FoodIntake): void {
     this.isEditing = true;
     this.foodIntakeForm.setValue({
       id: intake.id,
@@ -105,21 +101,18 @@ export class FoodIntakeComponent implements OnInit {
     });
   }
 
-  deleteFoodIntake(id: number) {
+  deleteFoodIntake(id: number): void {
     this.supabase.deleteFoodIntake(id)
-      .then(() => {
-        console.log('Food intake deleted successfully');
-        this.loadFoodIntakes(); // Refresh the list after deletion
-      })
-      .catch(error => console.error('Error deleting food intake:', error)); 
+      .then(() => this.loadData())
+      .catch(err => console.error('Error deleting food intake:', err));
   }
 
-  resetForm() {
+  resetForm(): void {
     this.isEditing = false;
     this.buildForm();
   }
 
-  setSelectedDate(value: string) {
+  setSelectedDate(value: string): void {
     this.selectedDate.set(value);
   }
 }
