@@ -1,37 +1,36 @@
-<div class="app-shell" [class.sidebar-open]="sidebarOpen">
+@if (isAuthenticated()) {
+  <div class="app-shell" [class.sidebar-open]="sidebarOpen">
 
-  <!-- ── Sidebar overlay backdrop (mobile only) ─────────────── -->
-  <div class="sidebar-backdrop" (click)="sidebarOpen = false"></div>
+    <div class="sidebar-backdrop" (click)="sidebarOpen = false"></div>
 
-  <!-- ── Left navigation sidebar ───────────────────────────── -->
-  <app-sidebar
-    [isDark]="isDark"
-    (themeToggle)="toggleTheme()"
-    (closeSidebar)="sidebarOpen = false"
-  />
+    <app-sidebar
+      [isDark]="isDark"
+      (themeToggle)="toggleTheme()"
+      (closeSidebar)="sidebarOpen = false"
+    />
 
-  <!-- ── Main scrollable content area ──────────────────────── -->
-  <main class="app-main">
+    <main class="app-main">
+      <div class="mobile-topbar">
+        <button
+          class="hamburger"
+          (click)="sidebarOpen = !sidebarOpen"
+          type="button"
+          aria-label="Toggle navigation"
+          [attr.aria-expanded]="sidebarOpen"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <span class="mobile-logo-text">
+          <img src="assets/icons/icon-96x96.png" alt="NT logo" width="28" height="28" style="display:block;"/>
+        </span>
+      </div>
 
-    <!-- Mobile-only topbar (hidden on desktop via CSS) -->
-    <div class="mobile-topbar">
-      <button
-        class="hamburger"
-        (click)="sidebarOpen = !sidebarOpen"
-        type="button"
-        aria-label="Toggle navigation"
-        [attr.aria-expanded]="sidebarOpen"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <span class="mobile-logo-text">
-        <img src="assets/icons/icon-96x96.png" alt="NT logo" width="28" height="28" style="display:block;"/>
-      </span>
-    </div>
+      <router-outlet />
+    </main>
 
-    <router-outlet />
-  </main>
-
-</div>
+  </div>
+} @else {
+  <app-user-code />
+}
