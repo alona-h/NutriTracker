@@ -1,8 +1,10 @@
 interface FoodIntake {
-	id: number;
-	food: FoodFact;
-	foodId: number;
+  id: number;
+  food: FoodFact;
+  foodId: number;
   intakeSize: number;
-	fiberIntake: number;
+  fiberIntake: number;
+  calorieIntake: number;
+  proteinIntake: number;
   createdAt: string;
 }

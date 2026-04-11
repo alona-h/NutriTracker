@@ -53,6 +53,8 @@ export class Supabase {
         servingSize: fact.servingSize,
         unitOfMeasurement: fact.unitOfMeasurement,
         fiber: fact.fiber,
+        calories: fact.calories,
+        protein: fact.protein,
       }]);
 
     if (error) console.error('Error adding food fact:', error);
@@ -85,13 +87,17 @@ export class Supabase {
         id,
         intakeSize,
         fiberIntake,
+        calorieIntake,
+        proteinIntake,
         createdAt,
         food:FoodFact (
           id,
           name,
           servingSize,
           unitOfMeasurement,
-          fiber
+          fiber,
+          calories,
+          protein
         )
       `)
       .eq('userId', userId);
@@ -129,6 +135,8 @@ export class Supabase {
         foodId: intake.foodId,
         intakeSize: intake.intakeSize,
         fiberIntake: intake.fiberIntake,
+        calorieIntake: intake.calorieIntake,
+        proteinIntake: intake.proteinIntake,
         userId,
       }]);
 

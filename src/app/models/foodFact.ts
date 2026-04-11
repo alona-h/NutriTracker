@@ -4,4 +4,6 @@ interface FoodFact {
   servingSize: number;
   unitOfMeasurement: string;
   fiber: number;
+  calories: number;
+  protein: number;
 };

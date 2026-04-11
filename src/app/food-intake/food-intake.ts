@@ -51,6 +51,36 @@ export class FoodIntakeComponent implements OnInit {
     }, 0);
   });
 
+  todayCalorieIntake = computed(() =>
+    this.todayIntakes().reduce((sum, i) => {
+      const ratio = i.intakeSize / i.food.servingSize;
+      return sum + i.food.calories * ratio;
+    }, 0)
+  );
+
+  todayProteinIntake = computed(() =>
+    this.todayIntakes().reduce((sum, i) => {
+      const ratio = i.intakeSize / i.food.servingSize;
+      return sum + i.food.protein * ratio;
+    }, 0)
+  );
+
+  selectedDateCalorieIntake = computed(() => {
+    if (!this.selectedDate()) return 0;
+    return this.selectedDateIntakes().reduce((sum, i) => {
+      const ratio = i.intakeSize / i.food.servingSize;
+      return sum + i.food.calories * ratio;
+    }, 0);
+  });
+
+  selectedDateProteinIntake = computed(() => {
+    if (!this.selectedDate()) return 0;
+    return this.selectedDateIntakes().reduce((sum, i) => {
+      const ratio = i.intakeSize / i.food.servingSize;
+      return sum + i.food.protein * ratio;
+    }, 0);
+  });
+
   private get userId(): number {
     return this.auth.currentUser()!.id;
   }
@@ -83,7 +113,10 @@ export class FoodIntakeComponent implements OnInit {
 
     const value = this.foodIntakeForm.value as FoodIntake;
     const fact = this.foodFacts().find(f => f.id === value.foodId);
-    value.fiberIntake = value.intakeSize * (fact?.fiber ?? 0) / (fact?.servingSize ?? 1);
+    const ratio = value.intakeSize / (fact?.servingSize ?? 1);
+    value.fiberIntake    = (fact?.fiber    ?? 0) * ratio;
+    value.calorieIntake  = (fact?.calories ?? 0) * ratio;
+    value.proteinIntake  = (fact?.protein  ?? 0) * ratio;
 
     this.supabase.submitFoodIntake(this.isEditing, value, this.userId)
       .then(() => {
