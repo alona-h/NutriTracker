@@ -29,6 +29,8 @@
             <th>Name</th>
             <th>Serving Size</th>
             <th>Fiber (g)</th>
+            <th>Calories (kcal)</th>
+            <th>Protein (g)</th>
             <th style="width:120px;"></th>
           </tr>
         </thead>
@@ -38,6 +40,8 @@
               <td style="font-weight:500;">{{ fact.name }}</td>
               <td>{{ fact.servingSize }} {{ fact.unitOfMeasurement }}</td>
               <td><span class="fiber-value">{{ fact.fiber }}</span></td>
+              <td><span class="fiber-value">{{ fact.calories }}</span></td>
+              <td><span class="fiber-value">{{ fact.protein }}</span></td>
               <td>
                 <div class="btn-row">
                   <button class="btn btn-ghost" (click)="updateFoodFact(fact)">
@@ -98,6 +102,14 @@
           <div class="form-field">
             <label for="fiber">Fiber (g)</label>
             <input id="fiber" type="number" formControlName="fiber" placeholder="e.g. 5.2" min="0" step="0.1"/>
+          </div>
+          <div class="form-field">
+            <label for="calories">Calories (kcal)</label>
+            <input id="calories" type="number" formControlName="calories" placeholder="e.g. 350" min="0" step="1"/>
+          </div>
+          <div class="form-field">
+            <label for="protein">Protein (g)</label>
+            <input id="protein" type="number" formControlName="protein" placeholder="e.g. 8.5" min="0" step="0.1"/>
           </div>
         </div>
         <div class="form-actions">

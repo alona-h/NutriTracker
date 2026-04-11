@@ -38,6 +38,8 @@ export class FoodFactsComponent implements OnInit {
       servingSize: [fact?.servingSize ?? null, [Validators.required, Validators.min(1)]],
       unitOfMeasurement: [fact?.unitOfMeasurement ?? '', Validators.required],
       fiber: [fact?.fiber ?? null, [Validators.required, Validators.min(0)]],
+      calories: [fact?.calories ?? null, [Validators.required, Validators.min(0)]],
+      protein: [fact?.protein ?? null, [Validators.required, Validators.min(0)]],
     });
   }
 

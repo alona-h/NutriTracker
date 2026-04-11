@@ -17,6 +17,14 @@
         <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.7px; color:var(--text-muted); margin-bottom:4px;">Today's total fiber (g)</div>
         <div style="font-family:'Sora',sans-serif; font-size:28px; font-weight:700; color:#10b981;">{{ todayFiberIntake() | number:'1.01-99' }}</div>
       </div>
+      <div class="card" style="padding:16px 24px; flex:1; min-width:160px;">
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.7px; color:var(--text-muted); margin-bottom:4px;">Today's calories (kcal)</div>
+        <div style="font-family:'Sora',sans-serif; font-size:28px; font-weight:700; color:#f59e0b;">{{ todayCalorieIntake() | number:'1.0-0' }}</div>
+      </div>
+      <div class="card" style="padding:16px 24px; flex:1; min-width:160px;">
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.7px; color:var(--text-muted); margin-bottom:4px;">Today's protein (g)</div>
+        <div style="font-family:'Sora',sans-serif; font-size:28px; font-weight:700; color:#8b5cf6;">{{ todayProteinIntake() | number:'1.0-1' }}</div>
+      </div>
     </div>
   }
 
@@ -43,6 +51,8 @@
             <th>Food</th>
             <th>Intake Size</th>
             <th>Fiber Intake (g)</th>
+            <th>Calories (kcal)</th>
+            <th>Protein (g)</th>
             <th>Date</th>
             <th style="width:120px;"></th>
           </tr>
@@ -53,6 +63,8 @@
               <td style="font-weight:500;">{{ intake.food.name }}</td>
               <td>{{ intake.intakeSize }} {{ intake.food.unitOfMeasurement }}</td>
               <td><span class="badge badge-green">{{ intake.fiberIntake | number:'1.01-99' }}</span></td>
+              <td><span class="badge" style="background:rgba(245,158,11,.1);color:#f59e0b;">{{ intake.calorieIntake | number:'1.0-0' }}</span></td>
+              <td><span class="badge" style="background:rgba(139,92,246,.1);color:#8b5cf6;">{{ intake.proteinIntake | number:'1.0-1' }}</span></td>
               <td style="color:var(--text-secondary); font-size:12.5px;">{{ intake.createdAt | date:'MMM d, y' }}</td>
               <td>
                 <div class="btn-row">
@@ -163,6 +175,12 @@
           <span style="padding:4px 12px; border-radius:6px; background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.2); font-size:12px; color:#10b981; font-weight:600;">
             {{ selectedDateFiberIntake() | number:'1.1-1' }}g fiber
           </span>
+          <span style="padding:4px 12px; border-radius:6px; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2); font-size:12px; color:#f59e0b; font-weight:600;">
+            {{ selectedDateCalorieIntake() | number:'1.0-0' }} kcal
+          </span>
+          <span style="padding:4px 12px; border-radius:6px; background:rgba(139,92,246,.08); border:1px solid rgba(139,92,246,.2); font-size:12px; color:#8b5cf6; font-weight:600;">
+            {{ selectedDateProteinIntake() | number:'1.0-1' }}g protein
+          </span>
         </div>
       }
     </div>
@@ -174,6 +192,8 @@
             <th>Food</th>
             <th>Intake Size</th>
             <th>Fiber Intake (g)</th>
+            <th>Calorie Intake (kcal)</th>
+            <th>Protein Intake (g)</th>
           </tr>
         </thead>
         <tbody>
@@ -197,6 +217,8 @@
                 <td style="font-weight:500;">{{ intake.food.name }}</td>
                 <td>{{ intake.intakeSize }} {{ intake.food.unitOfMeasurement }}</td>
                 <td><span class="badge badge-green">{{ intake.fiberIntake | number:'1.01-99' }}</span></td>
+                <td><span class="badge" style="background:rgba(245,158,11,.1);color:#f59e0b;">{{ intake.calorieIntake | number:'1.0-0' }}</span></td>
+                <td><span class="badge" style="background:rgba(139,92,246,.1);color:#8b5cf6;">{{ intake.proteinIntake | number:'1.0-1' }}</span></td>
               </tr>
             } @empty {
               <tr>
