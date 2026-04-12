@@ -25,7 +25,8 @@ export class FoodFactsComponent implements OnInit {
   loadFoodFacts() {
     this.supabase.getFoodFacts()
       .then(data => {
-        this.foodFacts.set(data);
+        const sorted = [...data].sort((a, b) => a.name.localeCompare(b.name));
+        this.foodFacts.set(sorted);
         console.log('Food facts fetched successfully:', data);
       })
       .catch(error => console.error('Error fetching food facts:', error));
@@ -44,14 +45,13 @@ export class FoodFactsComponent implements OnInit {
   }
 
   submitFoodFact() {
-    // Implement submit functionality here
     console.log('Submitting food fact');
     if (this.foodFactsForm.valid) {
       var foodFactFormValue: FoodFact = this.foodFactsForm.value as FoodFact;
       this.supabase.submitFoodFact(this.isEditing, foodFactFormValue)
         .then(() => {
           console.log('Food fact submitted successfully');
-          this.loadFoodFacts(); // Refresh the list after submission
+          this.loadFoodFacts();
           this.buildForm();
           this.isEditing = false;
         });
@@ -68,7 +68,7 @@ export class FoodFactsComponent implements OnInit {
     this.supabase.deleteFoodFact(id)
       .then(() => {
         console.log('Food fact deleted successfully');
-        this.loadFoodFacts(); // Refresh the list after deletion
+        this.loadFoodFacts();
       });
   }
 
