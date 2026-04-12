@@ -40,16 +40,19 @@ export class SearchableSelectComponent implements ControlValueAccessor {
 
   private elRef = inject(ElementRef);
 
-  isOpen = signal(false);
+  isOpen      = signal(false);
   searchQuery = signal('');
   selectedValue = signal<number | null>(null);
-  isDisabled = signal(false);
+  isDisabled  = signal(false);
+
+  // Fixed-position coordinates for the panel
+  panelTop   = signal('0px');
+  panelLeft  = signal('0px');
+  panelWidth = signal('0px');
 
   filteredOptions = computed(() => {
     const q = this.searchQuery().toLowerCase().trim();
-    return !q
-      ? this.options
-      : this.options.filter(o => o.label.toLowerCase().includes(q));
+    return !q ? this.options : this.options.filter(o => o.label.toLowerCase().includes(q));
   });
 
   selectedLabel = computed(() => {
@@ -80,8 +83,18 @@ export class SearchableSelectComponent implements ControlValueAccessor {
   toggle(): void {
     if (this.isDisabled()) return;
     const opening = !this.isOpen();
+    if (opening) {
+      this.searchQuery.set('');
+      // Measure trigger position so the fixed panel aligns with it
+      const trigger = (this.elRef.nativeElement as HTMLElement).querySelector('.ss-trigger');
+      if (trigger) {
+        const rect = trigger.getBoundingClientRect();
+        this.panelTop.set(`${rect.bottom + 4}px`);
+        this.panelLeft.set(`${rect.left}px`);
+        this.panelWidth.set(`${rect.width}px`);
+      }
+    }
     this.isOpen.set(opening);
-    if (opening) this.searchQuery.set('');
     this.onTouched();
   }
 
@@ -97,5 +110,11 @@ export class SearchableSelectComponent implements ControlValueAccessor {
     if (!this.elRef.nativeElement.contains(event.target as Node)) {
       this.isOpen.set(false);
     }
+  }
+
+  // Close on scroll so the panel doesn't drift away from the trigger
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (this.isOpen()) this.isOpen.set(false);
   }
 }

@@ -52,16 +52,18 @@
 }
 
 /* ── Dropdown panel ─────────────────────────────────────────── */
+/*
+ * position: fixed lets the panel escape any overflow:hidden ancestor
+ * (e.g. .card). top / left / width are set dynamically from the
+ * trigger's getBoundingClientRect() in the component.
+ */
 .ss-panel {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
+  position: fixed;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: var(--shadow-md);
-  z-index: 100;
+  z-index: 1000;
   overflow: hidden;
 }
 

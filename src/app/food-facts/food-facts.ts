@@ -8,6 +8,7 @@ import { Supabase } from '../services/supabase';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './food-facts.html',
+  styleUrl: './food-facts.css',
 })
 export class FoodFactsComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -18,7 +19,7 @@ export class FoodFactsComponent implements OnInit {
   isEditing = false;
 
   ngOnInit() {
-    this.loadFoodFacts();    
+    this.loadFoodFacts();
     this.buildForm();
   }
 
@@ -27,7 +28,6 @@ export class FoodFactsComponent implements OnInit {
       .then(data => {
         const sorted = [...data].sort((a, b) => a.name.localeCompare(b.name));
         this.foodFacts.set(sorted);
-        console.log('Food facts fetched successfully:', data);
       })
       .catch(error => console.error('Error fetching food facts:', error));
   }
@@ -45,12 +45,10 @@ export class FoodFactsComponent implements OnInit {
   }
 
   submitFoodFact() {
-    console.log('Submitting food fact');
     if (this.foodFactsForm.valid) {
-      var foodFactFormValue: FoodFact = this.foodFactsForm.value as FoodFact;
+      const foodFactFormValue: FoodFact = this.foodFactsForm.value as FoodFact;
       this.supabase.submitFoodFact(this.isEditing, foodFactFormValue)
         .then(() => {
-          console.log('Food fact submitted successfully');
           this.loadFoodFacts();
           this.buildForm();
           this.isEditing = false;
@@ -64,12 +62,8 @@ export class FoodFactsComponent implements OnInit {
   }
 
   deleteFoodFact(id: number) {
-    console.log('Deleting food fact:', id);
     this.supabase.deleteFoodFact(id)
-      .then(() => {
-        console.log('Food fact deleted successfully');
-        this.loadFoodFacts();
-      });
+      .then(() => this.loadFoodFacts());
   }
 
   resetForm() {

@@ -22,10 +22,14 @@
     </svg>
   </button>
 
-  <!-- Dropdown panel -->
+  <!-- Dropdown panel — position:fixed, coordinates set from JS -->
   @if (isOpen()) {
-    <div class="ss-panel">
-
+    <div
+      class="ss-panel"
+      [style.top]="panelTop()"
+      [style.left]="panelLeft()"
+      [style.width]="panelWidth()"
+    >
       <!-- Search row -->
       <div class="ss-search-row">
         <svg
@@ -67,7 +71,6 @@
           }
         }
       </ul>
-
     </div>
   }
 

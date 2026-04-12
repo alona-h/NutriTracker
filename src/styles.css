@@ -932,3 +932,16 @@ tbody td {
   background: rgba(239, 68, 68, 0.12);
   color: #ef4444;
 }
+
+/* Shared empty-state icon (used in food-intake and food-facts) */
+.empty-icon {
+  display: block;
+  margin: 0 auto 10px;
+  opacity: 0.3;
+}
+ 
+/* Logo images that need block display (app topbar + sidebar) */
+.logo-img {
+  display: block;
+}
+ 
