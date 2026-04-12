@@ -31,13 +31,13 @@
             <th>Fiber (g)</th>
             <th>Calories (kcal)</th>
             <th>Protein (g)</th>
-            <th style="width:120px;"></th>
+            <th class="col-actions"></th>
           </tr>
         </thead>
         <tbody>
           @for (fact of foodFacts(); track fact.id) {
             <tr>
-              <td style="font-weight:500;">{{ fact.name }}</td>
+              <td class="food-name">{{ fact.name }}</td>
               <td>{{ fact.servingSize }} {{ fact.unitOfMeasurement }}</td>
               <td><span class="fiber-value">{{ fact.fiber }}</span></td>
               <td><span class="fiber-value">{{ fact.calories }}</span></td>
@@ -65,9 +65,9 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="5">
+              <td colspan="6">
                 <div class="empty-state">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px; display:block; opacity:.3;">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon">
                     <circle cx="12" cy="12" r="10"/>
                     <line x1="12" y1="8" x2="12" y2="12"/>
                     <line x1="12" y1="16" x2="12.01" y2="16"/>

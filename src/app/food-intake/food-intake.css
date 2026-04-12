@@ -34,7 +34,7 @@
 /* ── Table ───────────────────────────────────────────────────── */
 .col-actions { width: 120px; }
 
-.food-name  { font-weight: 500; }
+.food-name { font-weight: 500; }
 
 .date-cell {
   color: var(--text-secondary);
@@ -44,13 +44,6 @@
 /* ── Badge colour variants ───────────────────────────────────── */
 .badge-amber  { background: rgba(245, 158,  11, 0.1); color: #f59e0b; }
 .badge-purple { background: rgba(139,  92, 246, 0.1); color: #8b5cf6; }
-
-/* ── Empty-state icon ────────────────────────────────────────── */
-.empty-icon {
-  display: block;
-  margin: 0 auto 10px;
-  opacity: 0.3;
-}
 
 /* ── Card header body (Browse by Date) ───────────────────────── */
 .card-header-body { flex: 1; }
