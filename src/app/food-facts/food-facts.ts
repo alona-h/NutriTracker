@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject} from '@angular/core';
+import { Component, OnInit, signal, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Supabase } from '../services/supabase';
@@ -13,6 +13,8 @@ import { Supabase } from '../services/supabase';
 export class FoodFactsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private supabase = inject(Supabase);
+
+  @ViewChild('formSection') formSectionRef!: ElementRef<HTMLElement>;
 
   foodFacts = signal<FoodFact[]>([]);
   foodFactsForm!: FormGroup;
@@ -44,6 +46,15 @@ export class FoodFactsComponent implements OnInit {
     });
   }
 
+  private scrollToForm(): void {
+    setTimeout(() => {
+      this.formSectionRef?.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 50);
+  }
+
   submitFoodFact() {
     if (this.foodFactsForm.valid) {
       const foodFactFormValue: FoodFact = this.foodFactsForm.value as FoodFact;
@@ -59,6 +70,7 @@ export class FoodFactsComponent implements OnInit {
   updateFoodFact(fact: FoodFact) {
     this.isEditing = true;
     this.buildForm(fact);
+    this.scrollToForm();
   }
 
   deleteFoodFact(id: number) {

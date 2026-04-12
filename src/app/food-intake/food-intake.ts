@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import { Component, OnInit, signal, inject, computed, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Supabase } from '../services/supabase';
@@ -18,6 +18,8 @@ export class FoodIntakeComponent implements OnInit {
   private supabase = inject(Supabase);
   private auth = inject(AuthService);
 
+  @ViewChild('formSection') formSectionRef!: ElementRef<HTMLElement>;
+
   foodIntakes = signal<FoodIntake[]>([]);
   foodFacts = signal<FoodFact[]>([]);
   foodIntakeForm!: FormGroup;
@@ -27,7 +29,6 @@ export class FoodIntakeComponent implements OnInit {
   readonly yesterday = Utils.toDateString(new Date(Date.now() - 86400000));
   selectedDate = signal<string>(this.yesterday);
 
-  /** Options shaped for the searchable select */
   foodFactOptions = computed<SelectOption[]>(() =>
     this.foodFacts().map(f => ({
       value: f.id,
@@ -121,6 +122,16 @@ export class FoodIntakeComponent implements OnInit {
     });
   }
 
+  private scrollToForm(): void {
+    // Small timeout lets Angular finish rendering the updated form first
+    setTimeout(() => {
+      this.formSectionRef?.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 50);
+  }
+
   submitFoodIntake(): void {
     if (this.foodIntakeForm.invalid) return;
 
@@ -145,6 +156,7 @@ export class FoodIntakeComponent implements OnInit {
       foodId: intake.food.id,
       intakeSize: intake.intakeSize,
     });
+    this.scrollToForm();
   }
 
   deleteFoodIntake(id: number): void {

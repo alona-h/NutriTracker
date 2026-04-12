@@ -104,7 +104,7 @@
     </div>
 
     <!-- Add / Edit form -->
-    <div class="form-section">
+    <div class="form-section" #formSection>
       <p class="form-section-title">{{ isEditing ? 'Edit Entry' : 'Add New Entry' }}</p>
       <form [formGroup]="foodIntakeForm" (ngSubmit)="submitFoodIntake()">
         <input type="hidden" formControlName="id"/>
