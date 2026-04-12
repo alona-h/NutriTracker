@@ -1,0 +1,148 @@
+.ss-root {
+  position: relative;
+  width: 100%;
+}
+
+/* ── Trigger button ─────────────────────────────────────────── */
+.ss-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 8px 11px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ss-trigger:focus,
+.ss-trigger.ss-open {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  outline: none;
+}
+
+.ss-trigger--empty .ss-trigger-label {
+  color: var(--text-muted);
+}
+
+.ss-trigger-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Chevron ────────────────────────────────────────────────── */
+.ss-chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.ss-chevron--up {
+  transform: rotate(180deg);
+}
+
+/* ── Dropdown panel ─────────────────────────────────────────── */
+.ss-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+  overflow: hidden;
+}
+
+/* ── Search row ─────────────────────────────────────────────── */
+.ss-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ss-search-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.ss-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+}
+
+.ss-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Options list ───────────────────────────────────────────── */
+.ss-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.ss-option {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.ss-option:hover {
+  background: var(--bg-surface-2);
+}
+
+.ss-option--active {
+  color: #10b981;
+  font-weight: 500;
+  background: rgba(16, 185, 129, 0.07);
+}
+
+.ss-no-results {
+  padding: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  list-style: none;
+}
+
+/* ── Disabled state ─────────────────────────────────────────── */
+.ss-disabled .ss-trigger {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ss-trigger {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+
+  .ss-search-input {
+    font-size: 16px;
+  }
+}

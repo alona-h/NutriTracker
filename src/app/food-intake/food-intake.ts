@@ -4,12 +4,14 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } 
 import { Supabase } from '../services/supabase';
 import { AuthService } from '../services/auth';
 import { Utils } from '../utils/utils';
+import { SearchableSelectComponent, SelectOption } from '../shared/searchable-select';
 
 @Component({
   selector: 'app-food-intake',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DatePipe, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, DatePipe, FormsModule, SearchableSelectComponent],
   templateUrl: './food-intake.html',
+  styleUrl: './food-intake.css',
 })
 export class FoodIntakeComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -24,6 +26,14 @@ export class FoodIntakeComponent implements OnInit {
   readonly today = Utils.toDateString(new Date());
   readonly yesterday = Utils.toDateString(new Date(Date.now() - 86400000));
   selectedDate = signal<string>(this.yesterday);
+
+  /** Options shaped for the searchable select */
+  foodFactOptions = computed<SelectOption[]>(() =>
+    this.foodFacts().map(f => ({
+      value: f.id,
+      label: `${f.name} (${f.unitOfMeasurement})`,
+    }))
+  );
 
   todayIntakes = computed(() =>
     this.foodIntakes().filter(i => Utils.toDateString(i.createdAt) === this.today)
@@ -43,14 +53,6 @@ export class FoodIntakeComponent implements OnInit {
     }, 0)
   );
 
-  selectedDateFiberIntake = computed(() => {
-    if (!this.selectedDate()) return 0;
-    return this.selectedDateIntakes().reduce((sum, i) => {
-      const ratio = i.intakeSize / i.food.servingSize;
-      return sum + i.food.fiber * ratio;
-    }, 0);
-  });
-
   todayCalorieIntake = computed(() =>
     this.todayIntakes().reduce((sum, i) => {
       const ratio = i.intakeSize / i.food.servingSize;
@@ -64,6 +66,14 @@ export class FoodIntakeComponent implements OnInit {
       return sum + i.food.protein * ratio;
     }, 0)
   );
+
+  selectedDateFiberIntake = computed(() => {
+    if (!this.selectedDate()) return 0;
+    return this.selectedDateIntakes().reduce((sum, i) => {
+      const ratio = i.intakeSize / i.food.servingSize;
+      return sum + i.food.fiber * ratio;
+    }, 0);
+  });
 
   selectedDateCalorieIntake = computed(() => {
     if (!this.selectedDate()) return 0;
@@ -96,14 +106,17 @@ export class FoodIntakeComponent implements OnInit {
       .catch(err => console.error('Error fetching food intakes:', err));
 
     this.supabase.getFoodFacts()
-      .then(data => this.foodFacts.set(data))
+      .then(data => {
+        const sorted = [...data].sort((a, b) => a.name.localeCompare(b.name));
+        this.foodFacts.set(sorted);
+      })
       .catch(err => console.error('Error fetching food facts:', err));
   }
 
   private buildForm(intake?: FoodIntake): void {
     this.foodIntakeForm = this.fb.group({
       id: [intake?.id ?? null],
-      foodId: [intake?.food.id ?? null, Validators.required],
+      foodId: [intake?.food?.id ?? null, Validators.required],
       intakeSize: [intake?.intakeSize ?? null, [Validators.required, Validators.min(1)]],
     });
   }
@@ -114,9 +127,9 @@ export class FoodIntakeComponent implements OnInit {
     const value = this.foodIntakeForm.value as FoodIntake;
     const fact = this.foodFacts().find(f => f.id === value.foodId);
     const ratio = value.intakeSize / (fact?.servingSize ?? 1);
-    value.fiberIntake    = (fact?.fiber    ?? 0) * ratio;
-    value.calorieIntake  = (fact?.calories ?? 0) * ratio;
-    value.proteinIntake  = (fact?.protein  ?? 0) * ratio;
+    value.fiberIntake   = (fact?.fiber    ?? 0) * ratio;
+    value.calorieIntake = (fact?.calories ?? 0) * ratio;
+    value.proteinIntake = (fact?.protein  ?? 0) * ratio;
 
     this.supabase.submitFoodIntake(this.isEditing, value, this.userId)
       .then(() => {
