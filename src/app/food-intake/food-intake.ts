@@ -2,7 +2,6 @@ import { Component, OnInit, signal, inject, computed, ViewChild, ElementRef } fr
 import { CommonModule, DatePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Supabase } from '../services/supabase';
-import { AuthService } from '../services/auth';
 import { Utils } from '../utils/utils';
 import { SearchableSelectComponent, SelectOption } from '../shared/searchable-select';
 
@@ -16,7 +15,6 @@ import { SearchableSelectComponent, SelectOption } from '../shared/searchable-se
 export class FoodIntakeComponent implements OnInit {
   private fb = inject(FormBuilder);
   private supabase = inject(Supabase);
-  private auth = inject(AuthService);
 
   @ViewChild('formSection') formSectionRef!: ElementRef<HTMLElement>;
 
@@ -92,9 +90,7 @@ export class FoodIntakeComponent implements OnInit {
     }, 0);
   });
 
-  private get userId(): number {
-    return this.auth.currentUser()!.id;
-  }
+  // userId no longer needed — RLS automatically scopes to auth.uid()
 
   ngOnInit(): void {
     this.loadData();
@@ -102,7 +98,7 @@ export class FoodIntakeComponent implements OnInit {
   }
 
   loadData(): void {
-    this.supabase.getFoodIntakes(this.userId)
+    this.supabase.getFoodIntakes()
       .then(data => this.foodIntakes.set(data))
       .catch(err => console.error('Error fetching food intakes:', err));
 
@@ -142,7 +138,7 @@ export class FoodIntakeComponent implements OnInit {
     value.calorieIntake = (fact?.calories ?? 0) * ratio;
     value.proteinIntake = (fact?.protein  ?? 0) * ratio;
 
-    this.supabase.submitFoodIntake(this.isEditing, value, this.userId)
+    this.supabase.submitFoodIntake(this.isEditing, value)
       .then(() => {
         this.loadData();
         this.resetForm();

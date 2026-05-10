@@ -1,0 +1,76 @@
+<div class="page-header">
+  <h1 class="page-title">Dashboard</h1>
+  <p class="page-subtitle">Your intake history over the last year.</p>
+</div>
+
+<div class="content-area" *ngIf="!loading()">
+  <!-- Fiber Heatmap -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <div>
+        <h2 class="card-title">Fiber Intake (Last 365 Days)</h2>
+        <p class="card-desc">Max target: {{ MAX_FIBER }}g</p>
+      </div>
+    </div>
+    <div class="heatmap-container">
+      <div class="heatmap-labels-y">
+        <div class="heatmap-label-y" *ngFor="let label of dayLabels; let i = index">
+          <span *ngIf="i % 2 !== 0">{{ label }}</span>
+        </div>
+      </div>
+      <div class="heatmap-grid-scroll">
+        <div class="heatmap-grid">
+          <div class="heatmap-week" *ngFor="let week of fiberWeeks()">
+            <div class="heatmap-day" *ngFor="let day of week.days"
+              [ngClass]="day ? (day.level > 0 ? 'level-fiber-' + day.level : 'empty') : ''"
+              [class.hidden]="day === null" [title]="day ? day.dateStr + ': ' + day.value + 'g' : ''">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calories Heatmap -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </div>
+      <div>
+        <h2 class="card-title">Calories Intake (Last 365 Days)</h2>
+        <p class="card-desc">Max target: {{ MAX_CALORIES }} kcal</p>
+      </div>
+    </div>
+    <div class="heatmap-container">
+      <div class="heatmap-labels-y">
+        <div class="heatmap-label-y" *ngFor="let label of dayLabels; let i = index">
+          <span *ngIf="i % 2 !== 0">{{ label }}</span>
+        </div>
+      </div>
+      <div class="heatmap-grid-scroll">
+        <div class="heatmap-grid">
+          <div class="heatmap-week" *ngFor="let week of calorieWeeks()">
+            <div class="heatmap-day" *ngFor="let day of week.days"
+              [ngClass]="day ? (day.level > 0 ? 'level-calorie-' + day.level : 'empty') : ''"
+              [class.hidden]="day === null" [title]="day ? day.dateStr + ': ' + day.value + ' kcal' : ''">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-area empty-state" *ngIf="loading()">
+  <p>Loading dashboard...</p>
+</div>
