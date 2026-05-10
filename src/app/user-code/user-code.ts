@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Supabase } from '../services/supabase';
-import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-user-code',
@@ -13,10 +12,10 @@ import { AuthService } from '../services/auth';
 export class UserCodeComponent {
   private fb = inject(FormBuilder);
   private supabase = inject(Supabase);
-  private auth = inject(AuthService);
 
   form = this.fb.group({
-    code: ['', [Validators.required, Validators.minLength(1)]],
+    username: ['', [Validators.required, Validators.minLength(1)]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   isLoading = signal(false);
@@ -27,14 +26,16 @@ export class UserCodeComponent {
     this.isLoading.set(true);
     this.error.set(null);
 
-    const code = this.form.value.code!.trim().toUpperCase();
-    const user = await this.supabase.getUserByCode(code);
+    const username = this.form.value.username!;
+    const password = this.form.value.password!;
 
-    if (user) {
-      this.auth.setUser(user);
-    } else {
-      this.error.set('Invalid code. Please check and try again.');
+    const { error } = await this.supabase.signIn(username, password);
+
+    if (error) {
+      this.error.set('Invalid username or password. Please try again.');
       this.isLoading.set(false);
     }
+    // On success: AuthService.onAuthStateChange fires automatically,
+    // sets currentUser, and the app shell shows the main view.
   }
 }

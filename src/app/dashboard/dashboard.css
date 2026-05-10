@@ -1,0 +1,94 @@
+.heatmap-container {
+  display: flex;
+  gap: 8px;
+  padding: 20px 24px;
+}
+
+.heatmap-labels-y {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 0px; /* Aligns with grid */
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 12px;
+  text-align: right;
+  min-width: 24px;
+}
+
+.heatmap-label-y {
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.heatmap-grid-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px; /* Room for scrollbar */
+}
+
+.heatmap-grid {
+  display: flex;
+  gap: 3px;
+}
+
+.heatmap-week {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.heatmap-day {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  transition: transform 0.1s ease;
+}
+
+.heatmap-day:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 1px var(--text-primary);
+}
+
+.heatmap-day.hidden {
+  visibility: hidden;
+}
+
+/* Base level 0 (empty) */
+.heatmap-day.empty {
+  background: #e2e8f0; /* darker light gray for better contrast */
+  border: 1px solid #cbd5e1;
+}
+
+/* Fiber Scale (Green) */
+.level-fiber-1 { background: rgba(16, 185, 129, 0.3); border: 1px solid rgba(16, 185, 129, 0.1); }
+.level-fiber-2 { background: rgba(16, 185, 129, 0.6); border: 1px solid rgba(16, 185, 129, 0.2); }
+.level-fiber-3 { background: #10b981; border: 1px solid #059669; }
+.level-fiber-4 { background: #059669; border: 1px solid #047857; }
+
+/* Calorie Scale (Amber) */
+.level-calorie-1 { background: rgba(245, 158, 11, 0.3); border: 1px solid rgba(245, 158, 11, 0.1); }
+.level-calorie-2 { background: rgba(245, 158, 11, 0.6); border: 1px solid rgba(245, 158, 11, 0.2); }
+.level-calorie-3 { background: #f59e0b; border: 1px solid #d97706; }
+.level-calorie-4 { background: #d97706; border: 1px solid #b45309; }
+
+/* Dark mode overrides */
+.dark .heatmap-day.empty { background: #1f2937; border: 1px solid #374151; }
+
+.dark .level-fiber-1 { background: rgba(16, 185, 129, 0.25); border: 1px solid rgba(16, 185, 129, 0.1); }
+.dark .level-fiber-2 { background: rgba(16, 185, 129, 0.5); border: 1px solid rgba(16, 185, 129, 0.2); }
+.dark .level-fiber-3 { background: #10b981; border: 1px solid rgba(0, 0, 0, 0.2); }
+.dark .level-fiber-4 { background: #059669; border: 1px solid rgba(0, 0, 0, 0.2); }
+
+.dark .level-calorie-1 { background: rgba(245, 158, 11, 0.25); border: 1px solid rgba(245, 158, 11, 0.1); }
+.dark .level-calorie-2 { background: rgba(245, 158, 11, 0.5); border: 1px solid rgba(245, 158, 11, 0.2); }
+.dark .level-calorie-3 { background: #f59e0b; border: 1px solid rgba(0, 0, 0, 0.2); }
+.dark .level-calorie-4 { background: #d97706; border: 1px solid rgba(0, 0, 0, 0.2); }
+
+@media (max-width: 768px) {
+  .heatmap-container { padding: 16px; }
+  .heatmap-day { width: 10px; height: 10px; }
+  .heatmap-label-y { height: 10px; font-size: 9px; line-height: 10px; }
+}

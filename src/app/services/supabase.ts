@@ -10,20 +10,54 @@ export class Supabase {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
+  // ── Auth ───────────────────────────────────────────────────
+
+  /**
+   * Sign in using a username (the user's code) and password.
+   * Internally, the username is mapped to a synthetic email:
+   * e.g. "ALICE42" → "alice42@nutritracker.local"
+   */
+  async signIn(username: string, password: string) {
+    const email = `${username.trim().toLowerCase()}@nutritracker.local`;
+    return this.supabase.auth.signInWithPassword({ email, password });
+  }
+
+  async signOut() {
+    return this.supabase.auth.signOut();
+  }
+
+  /**
+   * Returns the Supabase auth client so AuthService can subscribe to
+   * onAuthStateChange for reactive session management.
+   */
+  get authClient() {
+    return this.supabase.auth;
+  }
+
   // ── Users ──────────────────────────────────────────────────
 
-  async getUserByCode(code: string): Promise<AppUser | null> {
+  /**
+   * Fetches the User profile row for the currently authenticated user.
+   * RLS ensures only the matching row is returned.
+   */
+  async getUserProfile(): Promise<AppUser | null> {
     const { data, error } = await this.supabase
       .from('User')
-      .select('id, code, name, createdAt')
-      .eq('code', code.trim().toUpperCase())
+      .select('id, auth_user_id, code, name, createdAt')
       .single();
 
     if (error || !data) return null;
-    return data as AppUser;
+
+    return {
+      id: data['id'],
+      authId: data['auth_user_id'],
+      code: data['code'],
+      name: data['name'],
+      createdAt: data['createdAt'],
+    } as AppUser;
   }
 
-  // ── Food Facts (shared, no userId filter) ─────────────────
+  // ── Food Facts (shared, readable by all authenticated users) ──
 
   async getFoodFacts(): Promise<FoodFact[]> {
     const { data, error } = await this.supabase
@@ -78,9 +112,13 @@ export class Supabase {
     if (error) console.error('Error deleting food fact:', error);
   }
 
-  // ── Food Intakes (scoped to userId) ───────────────────────
+  // ── Food Intakes (RLS scoped to authenticated user) ──────────
 
-  async getFoodIntakes(userId: number): Promise<FoodIntake[]> {
+  /**
+   * Fetches food intakes for the current user.
+   * RLS automatically filters to rows where user_auth_id = auth.uid().
+   */
+  async getFoodIntakes(): Promise<FoodIntake[]> {
     const { data, error } = await this.supabase
       .from('FoodIntake')
       .select(`
@@ -99,8 +137,7 @@ export class Supabase {
           calories,
           protein
         )
-      `)
-      .eq('userId', userId);
+      `);
 
     if (error) {
       console.error('Error fetching food intakes:', error);
@@ -109,26 +146,32 @@ export class Supabase {
 
     return (data ?? []).map(item => ({
       ...item,
-      food: Array.isArray(item.food) ? item.food[0] as FoodFact : item.food as FoodFact,
+      food: Array.isArray(item['food']) ? item['food'][0] as FoodFact : item['food'] as FoodFact,
     })) as FoodIntake[];
   }
 
   async submitFoodIntake(
     isEdit: boolean,
     intake: FoodIntake,
-    userId: number
   ): Promise<void> {
     if (isEdit) {
       await this.updateFoodIntake(intake.id, intake);
     } else {
-      await this.addFoodIntake(intake, userId);
+      await this.addFoodIntake(intake);
     }
   }
 
   private async addFoodIntake(
     intake: Omit<FoodIntake, 'id' | 'createdAt'>,
-    userId: number
   ): Promise<void> {
+    // Get the current auth session to populate user_auth_id
+    const { data: sessionData } = await this.supabase.auth.getSession();
+    const authId = sessionData.session?.user?.id;
+    if (!authId) {
+      console.error('Cannot add food intake: no authenticated user');
+      return;
+    }
+
     const { error } = await this.supabase
       .from('FoodIntake')
       .insert([{
@@ -137,7 +180,7 @@ export class Supabase {
         fiberIntake: intake.fiberIntake,
         calorieIntake: intake.calorieIntake,
         proteinIntake: intake.proteinIntake,
-        userId,
+        user_auth_id: authId,
       }]);
 
     if (error) console.error('Error adding food intake:', error);

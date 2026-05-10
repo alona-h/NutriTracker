@@ -36,6 +36,7 @@ export class SidebarComponent {
   }
 
   navItems = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'dashboard' },
     { label: 'Food Intake', route: '/food-intake', icon: 'intake' },
     { label: 'Food Facts',  route: '/food-facts',  icon: 'facts'  },
   ];

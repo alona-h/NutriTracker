@@ -19,6 +19,9 @@ export class App implements OnInit {
   isAuthenticated = computed(() => this.auth.isAuthenticated());
 
   ngOnInit(): void {
+    // Initialise Supabase auth state listener (restores session on page load)
+    this.auth.init();
+
     const saved = localStorage.getItem('theme');
     this.isDark = saved === 'dark';
     this.applyTheme();
