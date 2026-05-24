@@ -56,11 +56,13 @@ Rules:
       { contents: [{ parts: [{ text: prompt }] }] },
     );
 
-    const text   = (data as { candidates: { content: { parts: { text: string }[] } }[] })
+    const raw  = (data as { candidates: { content: { parts: { text: string }[] } }[] })
       .candidates[0].content.parts[0].text.trim();
+    const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
     const parsed = JSON.parse(text);
     res.status(200).json(parsed);
-  } catch {
+  } catch (err) {
+    console.error('[insights]', err);
     res.status(422).json({ error: 'Could not generate insights. Try again later.' });
   }
 }
