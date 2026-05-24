@@ -1,11 +1,21 @@
 import { Routes } from '@angular/router';
-import { FoodIntakeComponent } from './food-intake/food-intake';
-import { FoodFactsComponent } from './food-facts/food-facts';
+import { NutritionLogComponent } from './nutrition-log/nutrition-log';
+import { FoodDatabaseComponent } from './food-database/food-database';
 import { DashboardComponent } from './dashboard/dashboard';
+import { ProfileComponent } from './profile/profile';
+import { InsightsComponent } from './insights/insights';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-    { path: 'dashboard', component: DashboardComponent },
-    { path: 'food-intake', component: FoodIntakeComponent },
-    { path: 'food-facts', component: FoodFactsComponent }
+  { path: '', redirectTo: 'summary', pathMatch: 'full' },
+
+  { path: 'summary',   component: DashboardComponent },
+  { path: 'log',       component: NutritionLogComponent },
+  { path: 'foods',     component: FoodDatabaseComponent },
+  { path: 'insights',  component: InsightsComponent },
+  { path: 'profile',   component: ProfileComponent },
+
+  // Legacy redirects
+  { path: 'dashboard',   redirectTo: 'summary',  pathMatch: 'full' },
+  { path: 'food-intake', redirectTo: 'log',       pathMatch: 'full' },
+  { path: 'food-facts',  redirectTo: 'foods',     pathMatch: 'full' },
 ];

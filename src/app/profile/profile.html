@@ -1,0 +1,128 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Profile &amp; Goals</h1>
+      <p class="page-sub">Personalize your targets and appearance.</p>
+    </div>
+    <button
+      class="btn btn-primary"
+      type="button"
+      [disabled]="saving()"
+      (click)="save()"
+    >
+      @if (saving()) {
+        Saving…
+      } @else if (saved()) {
+        Saved!
+      } @else {
+        Save changes
+      }
+    </button>
+  </div>
+
+  <div class="content profile-content">
+
+    <!-- About you -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div>
+          <p class="card-title">About you</p>
+          <p class="card-desc">Optional — used to calculate personalised recommendations</p>
+        </div>
+      </div>
+
+      <form [formGroup]="form" class="profile-form">
+        <div class="form-grid">
+          <div class="field profile-field-name">
+            <label for="profileName">Display name</label>
+            <input id="profileName" type="text" formControlName="name" class="input" placeholder="e.g. Alex"/>
+          </div>
+
+          <div class="field">
+            <label for="profileAge">Age</label>
+            <input id="profileAge" type="number" formControlName="age" class="input" placeholder="e.g. 30" min="1" max="120"/>
+          </div>
+
+          <div class="field">
+            <label for="profileSex">Biological sex</label>
+            <select id="profileSex" formControlName="sex" class="input select-input">
+              <option [ngValue]="null">Select…</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other / prefer not to say</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="profileHeight">Height (cm)</label>
+            <input id="profileHeight" type="number" formControlName="heightCm" class="input" placeholder="e.g. 170" min="50" max="300"/>
+          </div>
+
+          <div class="field">
+            <label for="profileWeight">Weight (kg)</label>
+            <input id="profileWeight" type="number" formControlName="weightKg" class="input" placeholder="e.g. 70" min="10" max="500"/>
+          </div>
+        </div>
+
+        <div class="profile-section-label">Activity level</div>
+        <div class="activity-grid">
+          @for (level of activityLevels; track level.value) {
+            <label
+              class="activity-option"
+              [class.activity-option-selected]="form.get('activityLevel')?.value === level.value"
+            >
+              <input
+                type="radio"
+                formControlName="activityLevel"
+                [value]="level.value"
+                class="sr-only"
+              />
+              <span class="activity-label">{{ level.label }}</span>
+              <span class="activity-desc">{{ level.desc }}</span>
+            </label>
+          }
+        </div>
+      </form>
+    </div>
+
+    <!-- Daily targets -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div>
+          <p class="card-title">Daily targets</p>
+          <p class="card-desc">These values drive the goal rings on your Summary page</p>
+        </div>
+      </div>
+
+      <form [formGroup]="form" class="profile-form">
+        <div class="form-grid">
+          <div class="field">
+            <label for="targetCalories">Calorie target (kcal)</label>
+            <input id="targetCalories" type="number" formControlName="targetCalories" class="input" placeholder="2000" min="500"/>
+          </div>
+          <div class="field">
+            <label for="targetProtein">Protein target (g)</label>
+            <input id="targetProtein" type="number" formControlName="targetProtein" class="input" placeholder="50" min="0"/>
+          </div>
+          <div class="field">
+            <label for="targetFiber">Fiber target (g)</label>
+            <input id="targetFiber" type="number" formControlName="targetFiber" class="input" placeholder="25" min="0"/>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

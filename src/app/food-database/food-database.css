@@ -1,0 +1,61 @@
+.food-db-name {
+  font-weight: 500;
+  color: var(--ink-900);
+}
+
+.food-field-name {
+  grid-column: 1 / -1;
+}
+
+.ai-autofill-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r);
+  font-size: 13px;
+  color: var(--ink-500);
+}
+
+/* ── Card head with search ──────────────────────────────────── */
+.food-db-head-text {
+  flex: 1;
+}
+
+.food-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 180px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.food-search-wrap:focus-within {
+  border-color: var(--brand-500);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 15%, transparent);
+}
+
+.food-search-icon {
+  color: var(--ink-400);
+  flex-shrink: 0;
+}
+
+.food-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--ink-900);
+  width: 100%;
+}
+
+.food-search-input::placeholder {
+  color: var(--ink-400);
+}

@@ -1,4 +1,4 @@
-interface FoodFact {
+interface FoodItem {
   id: number;
   name: string;
   servingSize: number;
