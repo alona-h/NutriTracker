@@ -1,36 +1,86 @@
 @if (isAuthenticated()) {
-  <div class="app-shell" [class.sidebar-open]="sidebarOpen">
+  <div class="app-shell" [class.night]="isNight" [class.sidebar-open]="sidebarOpen">
 
     <div class="sidebar-backdrop" (click)="sidebarOpen = false"></div>
 
     <app-sidebar
-      [isDark]="isDark"
+      [isNight]="isNight"
       (themeToggle)="toggleTheme()"
       (closeSidebar)="sidebarOpen = false"
     />
 
     <main class="app-main">
+      <!-- Mobile top bar -->
       <div class="mobile-topbar">
         <button
-          class="hamburger"
-          (click)="sidebarOpen = !sidebarOpen"
+          class="btn btn-ghost btn-sm"
           type="button"
           aria-label="Toggle navigation"
           [attr.aria-expanded]="sidebarOpen"
+          (click)="sidebarOpen = !sidebarOpen"
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
         </button>
-        <span class="mobile-logo-text">
-          <img src="assets/icons/icon-96x96.png" alt="NT logo" width="28" height="28" class="logo-img"/>
-        </span>
+        <div class="mobile-topbar-brand">
+          <div class="mobile-topbar-mark">
+            <img src="assets/icons/icon-96x96.png" alt="NutriTracker"/>
+          </div>
+          <span class="mobile-topbar-name">NutriTracker</span>
+        </div>
+        <div class="topbar-spacer"></div>
       </div>
 
       <router-outlet />
     </main>
 
+    <!-- Mobile bottom tab bar -->
+    <nav class="mobile-tabbar">
+      <a class="mobile-tab" routerLink="/summary" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="9" rx="1"/>
+          <rect x="14" y="3" width="7" height="5" rx="1"/>
+          <rect x="14" y="12" width="7" height="9" rx="1"/>
+          <rect x="3" y="16" width="7" height="5" rx="1"/>
+        </svg>
+        Summary
+      </a>
+      <a class="mobile-tab" routerLink="/log" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+          <path d="M7 2v20"/>
+          <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+        </svg>
+        Log
+      </a>
+      <a class="mobile-tab" routerLink="/foods" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+          <path d="M12 16v-4"/><path d="M12 8h.01"/>
+        </svg>
+        Foods
+      </a>
+      <a class="mobile-tab" routerLink="/insights" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <path d="M12 17h.01"/>
+          <circle cx="12" cy="12" r="10"/>
+        </svg>
+        Insights
+      </a>
+      <a class="mobile-tab" routerLink="/profile" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Profile
+      </a>
+    </nav>
+
   </div>
 } @else {
-  <app-user-code />
+  <app-login />
 }

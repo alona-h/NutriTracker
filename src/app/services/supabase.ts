@@ -12,35 +12,21 @@ export class Supabase {
 
   // ── Auth ───────────────────────────────────────────────────
 
-  /**
-   * Sign in using a username (the user's code) and password.
-   * Internally, the username is mapped to a synthetic email:
-   * e.g. "ALICE42" → "alice42@nutritracker.local"
-   */
-  async signIn(username: string, password: string) {
-    const email = `${username.trim().toLowerCase()}@nutritracker.local`;
-    return this.supabase.auth.signInWithPassword({ email, password });
+  async signIn(email: string, password: string) {
+    return this.supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
   }
 
   async signOut() {
     return this.supabase.auth.signOut();
   }
 
-  /**
-   * Returns the Supabase auth client so AuthService can subscribe to
-   * onAuthStateChange for reactive session management.
-   */
   get authClient() {
     return this.supabase.auth;
   }
 
-  // ── Users ──────────────────────────────────────────────────
+  // ── App user profile (User table) ──────────────────────────
 
-  /**
-   * Fetches the User profile row for the currently authenticated user.
-   * RLS ensures only the matching row is returned.
-   */
-  async getUserProfile(): Promise<AppUser | null> {
+  async getAppUser(): Promise<AppUser | null> {
     const { data, error } = await this.supabase
       .from('User')
       .select('id, auth_user_id, code, name, createdAt')
@@ -57,21 +43,66 @@ export class Supabase {
     } as AppUser;
   }
 
-  // ── Food Facts (shared, readable by all authenticated users) ──
+  // ── Nutrition profile / goals (user_profiles table) ────────
 
-  async getFoodFacts(): Promise<FoodFact[]> {
+  async getNutritionProfile(): Promise<UserProfile | null> {
     const { data, error } = await this.supabase
-      .from('FoodFact')
-      .select();
+      .from('user_profiles')
+      .select('*')
+      .single();
 
+    if (error || !data) return null;
+
+    return {
+      id:             data['id'],
+      authId:         data['auth_id'],
+      name:           data['name'],
+      age:            data['age'],
+      sex:            data['sex'],
+      heightCm:       data['height_cm'],
+      weightKg:       data['weight_kg'],
+      activityLevel:  data['activity_level'],
+      targetCalories: data['target_calories'] ?? 2000,
+      targetProtein:  data['target_protein']  ?? 50,
+      targetFiber:    data['target_fiber']     ?? 25,
+    } as UserProfile;
+  }
+
+  async upsertNutritionProfile(profile: Partial<UserProfile>): Promise<void> {
+    const { data: sessionData } = await this.supabase.auth.getSession();
+    const authId = sessionData.session?.user?.id;
+    if (!authId) return;
+
+    const { error } = await this.supabase
+      .from('user_profiles')
+      .upsert({
+        auth_id:        authId,
+        name:           profile.name,
+        age:            profile.age,
+        sex:            profile.sex,
+        height_cm:      profile.heightCm,
+        weight_kg:      profile.weightKg,
+        activity_level: profile.activityLevel,
+        target_calories: profile.targetCalories,
+        target_protein:  profile.targetProtein,
+        target_fiber:    profile.targetFiber,
+      }, { onConflict: 'auth_id' });
+
+    if (error) console.error('Error upserting nutrition profile:', error);
+  }
+
+  // ── Food Facts ─────────────────────────────────────────────
+
+  async getFoodFacts(): Promise<FoodItem[]> {
+    const { data, error } = await this.supabase.from('FoodFact').select();
     if (error) {
       console.error('Error fetching food facts:', error);
       return [];
     }
-    return data as FoodFact[];
+    return data as FoodItem[];
   }
 
-  async submitFoodFact(isEdit: boolean, fact: FoodFact): Promise<void> {
+  async submitFoodFact(isEdit: boolean, fact: FoodItem): Promise<void> {
     if (isEdit) {
       await this.updateFoodFact(fact.id, fact);
     } else {
@@ -79,46 +110,31 @@ export class Supabase {
     }
   }
 
-  private async addFoodFact(fact: FoodFact): Promise<void> {
-    const { error } = await this.supabase
-      .from('FoodFact')
-      .insert([{
-        name: fact.name,
-        servingSize: fact.servingSize,
-        unitOfMeasurement: fact.unitOfMeasurement,
-        fiber: fact.fiber,
-        calories: fact.calories,
-        protein: fact.protein,
-      }]);
-
+  private async addFoodFact(fact: FoodItem): Promise<void> {
+    const { error } = await this.supabase.from('FoodFact').insert([{
+      name:              fact.name,
+      servingSize:       fact.servingSize,
+      unitOfMeasurement: fact.unitOfMeasurement,
+      fiber:             fact.fiber,
+      calories:          fact.calories,
+      protein:           fact.protein,
+    }]);
     if (error) console.error('Error adding food fact:', error);
   }
 
-  private async updateFoodFact(id: number, fact: Partial<FoodFact>): Promise<void> {
-    const { error } = await this.supabase
-      .from('FoodFact')
-      .update(fact)
-      .eq('id', id);
-
+  private async updateFoodFact(id: number, fact: Partial<FoodItem>): Promise<void> {
+    const { error } = await this.supabase.from('FoodFact').update(fact).eq('id', id);
     if (error) console.error('Error updating food fact:', error);
   }
 
   async deleteFoodFact(id: number): Promise<void> {
-    const { error } = await this.supabase
-      .from('FoodFact')
-      .delete()
-      .eq('id', id);
-
+    const { error } = await this.supabase.from('FoodFact').delete().eq('id', id);
     if (error) console.error('Error deleting food fact:', error);
   }
 
-  // ── Food Intakes (RLS scoped to authenticated user) ──────────
+  // ── Food Intakes ───────────────────────────────────────────
 
-  /**
-   * Fetches food intakes for the current user.
-   * RLS automatically filters to rows where user_auth_id = auth.uid().
-   */
-  async getFoodIntakes(): Promise<FoodIntake[]> {
+  async getFoodIntakes(): Promise<NutritionEntry[]> {
     const { data, error } = await this.supabase
       .from('FoodIntake')
       .select(`
@@ -129,13 +145,7 @@ export class Supabase {
         proteinIntake,
         createdAt,
         food:FoodFact (
-          id,
-          name,
-          servingSize,
-          unitOfMeasurement,
-          fiber,
-          calories,
-          protein
+          id, name, servingSize, unitOfMeasurement, fiber, calories, protein
         )
       `);
 
@@ -146,14 +156,11 @@ export class Supabase {
 
     return (data ?? []).map(item => ({
       ...item,
-      food: Array.isArray(item['food']) ? item['food'][0] as FoodFact : item['food'] as FoodFact,
-    })) as FoodIntake[];
+      food: Array.isArray(item['food']) ? item['food'][0] as FoodItem : item['food'] as FoodItem,
+    })) as NutritionEntry[];
   }
 
-  async submitFoodIntake(
-    isEdit: boolean,
-    intake: FoodIntake,
-  ): Promise<void> {
+  async submitFoodIntake(isEdit: boolean, intake: NutritionEntry): Promise<void> {
     if (isEdit) {
       await this.updateFoodIntake(intake.id, intake);
     } else {
@@ -161,10 +168,7 @@ export class Supabase {
     }
   }
 
-  private async addFoodIntake(
-    intake: Omit<FoodIntake, 'id' | 'createdAt'>,
-  ): Promise<void> {
-    // Get the current auth session to populate user_auth_id
+  private async addFoodIntake(intake: Omit<NutritionEntry, 'id' | 'createdAt'>): Promise<void> {
     const { data: sessionData } = await this.supabase.auth.getSession();
     const authId = sessionData.session?.user?.id;
     if (!authId) {
@@ -172,38 +176,68 @@ export class Supabase {
       return;
     }
 
-    const { error } = await this.supabase
-      .from('FoodIntake')
-      .insert([{
-        foodId: intake.foodId,
-        intakeSize: intake.intakeSize,
-        fiberIntake: intake.fiberIntake,
-        calorieIntake: intake.calorieIntake,
-        proteinIntake: intake.proteinIntake,
-        user_auth_id: authId,
-      }]);
-
+    const { error } = await this.supabase.from('FoodIntake').insert([{
+      foodId:        intake.foodId,
+      intakeSize:    intake.intakeSize,
+      fiberIntake:   intake.fiberIntake,
+      calorieIntake: intake.calorieIntake,
+      proteinIntake: intake.proteinIntake,
+      user_auth_id:  authId,
+    }]);
     if (error) console.error('Error adding food intake:', error);
   }
 
-  private async updateFoodIntake(
-    id: number,
-    intake: Partial<FoodIntake>
-  ): Promise<void> {
-    const { error } = await this.supabase
-      .from('FoodIntake')
-      .update(intake)
-      .eq('id', id);
-
+  private async updateFoodIntake(id: number, intake: Partial<NutritionEntry>): Promise<void> {
+    const { error } = await this.supabase.from('FoodIntake').update(intake).eq('id', id);
     if (error) console.error('Error updating food intake:', error);
   }
 
   async deleteFoodIntake(id: number): Promise<void> {
-    const { error } = await this.supabase
-      .from('FoodIntake')
-      .delete()
-      .eq('id', id);
-
+    const { error } = await this.supabase.from('FoodIntake').delete().eq('id', id);
     if (error) console.error('Error deleting food intake:', error);
   }
+
+  // ── Daily totals for 7-day trend ───────────────────────────
+
+  async getDailyTotals(daysBack: number = 7): Promise<DailyTotal[]> {
+    const since = new Date();
+    since.setDate(since.getDate() - daysBack + 1);
+    const sinceStr = since.toISOString().split('T')[0];
+
+    const { data, error } = await this.supabase
+      .from('FoodIntake')
+      .select('calorieIntake, proteinIntake, fiberIntake, createdAt')
+      .gte('createdAt', sinceStr);
+
+    if (error) {
+      console.error('Error fetching daily totals:', error);
+      return [];
+    }
+
+    const map: Record<string, DailyTotal> = {};
+    for (let i = 0; i < daysBack; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - (daysBack - 1 - i));
+      const key = d.toISOString().split('T')[0];
+      map[key] = { date: key, calories: 0, protein: 0, fiber: 0 };
+    }
+
+    for (const row of data ?? []) {
+      const key = (row['createdAt'] as string).split('T')[0];
+      if (map[key]) {
+        map[key].calories += row['calorieIntake'] ?? 0;
+        map[key].protein  += row['proteinIntake']  ?? 0;
+        map[key].fiber    += row['fiberIntake']    ?? 0;
+      }
+    }
+
+    return Object.values(map).sort((a, b) => a.date.localeCompare(b.date));
+  }
+}
+
+interface DailyTotal {
+  date:     string;
+  calories: number;
+  protein:  number;
+  fiber:    number;
 }

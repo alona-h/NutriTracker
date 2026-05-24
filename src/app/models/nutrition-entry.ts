@@ -1,6 +1,6 @@
-interface FoodIntake {
+interface NutritionEntry {
   id: number;
-  food: FoodFact;
+  food: FoodItem;
   foodId: number;
   intakeSize: number;
   fiberIntake: number;

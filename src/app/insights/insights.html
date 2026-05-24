@@ -1,0 +1,196 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <p class="page-eyebrow">AI COACH · PERSONALIZED</p>
+      <h1 class="page-title">Insights</h1>
+      <p class="page-sub">Coaching feedback on today's intake based on your goals and patterns.</p>
+    </div>
+    <div class="insights-header-actions">
+      <button class="btn btn-ghost btn-sm" type="button" (click)="refresh()" [disabled]="loadingAnalysis()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" [class.spin]="loadingAnalysis()">
+          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        Refresh analysis
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    @if (loadingAnalysis()) {
+      <div class="insights-skeleton card ai-card">
+        <div class="skeleton-line skeleton-line--wide"></div>
+        <div class="skeleton-line skeleton-line--mid"></div>
+        <div class="insights-macro-strip">
+          <div class="skeleton-block"></div>
+          <div class="skeleton-block"></div>
+          <div class="skeleton-block"></div>
+        </div>
+      </div>
+    } @else if (error()) {
+      <div class="card insights-error-card">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>{{ error() }}</p>
+        <button class="btn btn-primary btn-sm" type="button" (click)="refresh()">Try again</button>
+      </div>
+    } @else if (insight()) {
+
+      <!-- ── Hero card ── -->
+      <div class="card ai-card insights-hero">
+        <div class="insights-badge-row">
+          <span class="insights-badge">
+            <span class="insights-badge-dot"></span>
+            AI COACH
+          </span>
+          <span class="insights-analyzed">{{ insight()!.analyzedAgo }}</span>
+        </div>
+
+        <p class="insights-headline">"{{ insight()!.headline }}"</p>
+
+        <div class="insights-macro-strip">
+          <div class="ai-inset insights-macro-card">
+            <p class="insights-macro-label">CALORIES</p>
+            <p class="insights-macro-pct insights-macro-pct--amber">{{ insight()!.macroStatus.calories.pct }}%</p>
+            <p class="insights-macro-status">{{ insight()!.macroStatus.calories.label }}</p>
+          </div>
+          <div class="ai-inset insights-macro-card">
+            <p class="insights-macro-label">PROTEIN</p>
+            <p class="insights-macro-pct insights-macro-pct--plum">{{ insight()!.macroStatus.protein.pct }}%</p>
+            <p class="insights-macro-status">{{ insight()!.macroStatus.protein.label }}</p>
+          </div>
+          <div class="ai-inset insights-macro-card">
+            <p class="insights-macro-label">FIBER</p>
+            <p class="insights-macro-pct insights-macro-pct--green">{{ insight()!.macroStatus.fiber.pct }}%</p>
+            <p class="insights-macro-status">{{ insight()!.macroStatus.fiber.label }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Two-column row ── -->
+      <div class="insights-split">
+
+        <!-- Suggestions -->
+        <div class="card insights-suggestions-card">
+          <div class="card-head">
+            <div class="card-head-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 3l14 9-14 9V3z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="card-title">Try this before bed</p>
+              <p class="card-desc">{{ insight()!.suggestionContext }}</p>
+            </div>
+          </div>
+          <div class="insights-suggestions">
+            @for (s of insight()!.suggestions; track s.name; let i = $index) {
+              <div class="suggestion-item">
+                <span class="suggestion-num">{{ i + 1 }}</span>
+                <div class="suggestion-body">
+                  <p class="suggestion-name">{{ s.name }}</p>
+                  <div class="suggestion-chips">
+                    <span class="chip chip-amber">{{ s.calories }} kcal</span>
+                    <span class="chip chip-plum">+{{ s.protein }}g</span>
+                    <span class="chip chip-green">+{{ s.fiber }}g</span>
+                  </div>
+                  <p class="suggestion-note">{{ s.note }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Right column: Working + Watch -->
+        <div class="insights-right-col">
+          <div class="card insights-pattern-card">
+            <div class="card-head">
+              <div class="card-head-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+                </svg>
+              </div>
+              <div>
+                <p class="card-title">{{ insight()!.working.title }}</p>
+              </div>
+            </div>
+            <p class="insights-pattern-body">{{ insight()!.working.body }}</p>
+            <div class="streak-dots">
+              @for (hit of insight()!.working.days; track $index) {
+                <span class="streak-dot" [class.streak-dot--hit]="hit"></span>
+              }
+            </div>
+          </div>
+
+          <div class="card insights-pattern-card">
+            <div class="card-head">
+              <div class="card-head-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+              <div>
+                <p class="card-title">{{ insight()!.watch.title }}</p>
+              </div>
+            </div>
+            <p class="insights-pattern-body">{{ insight()!.watch.body }}</p>
+          </div>
+        </div>
+
+      </div>
+
+    }
+
+    <!-- ── Ask the Coach ── -->
+    <div class="card insights-ask-card">
+      <div class="card-head">
+        <div class="card-head-icon insights-ask-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div>
+          <p class="card-title">Ask the Coach</p>
+          <p class="card-desc">Get specific guidance on your nutrition</p>
+        </div>
+      </div>
+
+      @if (chatHistory().length > 0) {
+        <div class="chat-history">
+          @for (entry of chatHistory(); track $index) {
+            <div class="chat-q">{{ entry.q }}</div>
+            <div class="chat-a">{{ entry.a }}</div>
+          }
+        </div>
+      }
+
+      <div class="ask-bar">
+        <input
+          class="ask-input"
+          type="text"
+          placeholder="How can I increase fiber?"
+          [ngModel]="questionInput()"
+          (ngModelChange)="questionInput.set($event)"
+          (keydown.enter)="ask()"
+          [disabled]="loadingAnswer()"
+        />
+        <button
+          class="btn btn-primary btn-sm"
+          type="button"
+          (click)="ask()"
+          [disabled]="!questionInput().trim() || loadingAnswer()"
+        >
+          @if (loadingAnswer()) {
+            <span class="ai-spinner"></span>
+          } @else {
+            Ask
+          }
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

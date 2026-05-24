@@ -10,13 +10,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  background: var(--bg-input);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 7px;
   padding: 8px 11px;
   font-size: 13px;
   font-family: inherit;
-  color: var(--text-primary);
+  color: var(--ink-900);
   cursor: pointer;
   text-align: left;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -24,13 +24,13 @@
 
 .ss-trigger:focus,
 .ss-trigger.ss-open {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  border-color: var(--brand-500);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 15%, transparent);
   outline: none;
 }
 
 .ss-trigger--empty .ss-trigger-label {
-  color: var(--text-muted);
+  color: var(--ink-400);
 }
 
 .ss-trigger-label {
@@ -43,7 +43,7 @@
 /* ── Chevron ────────────────────────────────────────────────── */
 .ss-chevron {
   flex-shrink: 0;
-  color: var(--text-muted);
+  color: var(--ink-400);
   transition: transform 0.2s ease;
 }
 
@@ -52,14 +52,9 @@
 }
 
 /* ── Dropdown panel ─────────────────────────────────────────── */
-/*
- * position: fixed lets the panel escape any overflow:hidden ancestor
- * (e.g. .card). top / left / width are set dynamically from the
- * trigger's getBoundingClientRect() in the component.
- */
 .ss-panel {
   position: fixed;
-  background: var(--bg-surface);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: var(--shadow-md);
@@ -73,12 +68,13 @@
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--surface);
 }
 
 .ss-search-icon {
   flex-shrink: 0;
-  color: var(--text-muted);
+  color: var(--ink-400);
 }
 
 .ss-search-input {
@@ -89,11 +85,11 @@
   padding: 0;
   font-size: 13px;
   font-family: inherit;
-  color: var(--text-primary);
+  color: var(--ink-900);
 }
 
 .ss-search-input::placeholder {
-  color: var(--text-muted);
+  color: var(--ink-400);
 }
 
 /* ── Options list ───────────────────────────────────────────── */
@@ -103,32 +99,34 @@
   padding: 4px 0;
   max-height: 220px;
   overflow-y: auto;
+  background: var(--surface);
 }
 
 .ss-option {
   padding: 8px 12px;
   font-size: 13px;
-  color: var(--text-primary);
+  color: var(--ink-900);
   cursor: pointer;
   transition: background 0.1s ease;
 }
 
 .ss-option:hover {
-  background: var(--bg-surface-2);
+  background: var(--surface-2);
 }
 
 .ss-option--active {
-  color: #10b981;
-  font-weight: 500;
-  background: rgba(16, 185, 129, 0.07);
+  color: var(--brand-700);
+  font-weight: 600;
+  background: var(--brand-50);
 }
 
 .ss-no-results {
   padding: 12px;
   font-size: 13px;
-  color: var(--text-muted);
+  color: var(--ink-400);
   text-align: center;
   list-style: none;
+  background: var(--surface);
 }
 
 /* ── Disabled state ─────────────────────────────────────────── */

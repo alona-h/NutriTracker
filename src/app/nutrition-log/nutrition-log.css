@@ -1,0 +1,237 @@
+.entry-food-name {
+  font-weight: 500;
+  color: var(--ink-900);
+}
+
+/* ── Page header with date ─────────────────────────────────── */
+.log-page-header {
+  align-items: center;
+}
+
+.log-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Date chip (shows "Today" or formatted date) ─────────────── */
+.log-date-chip-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.log-date-chip {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--ink-700);
+  font-weight: 600;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.log-date-chip-wrap:hover .log-date-chip {
+  border-color: var(--brand-500);
+  background: var(--surface);
+  color: var(--ink-900);
+}
+
+.log-date-chip svg {
+  color: var(--ink-500);
+  flex-shrink: 0;
+}
+
+.log-date-chip-text {
+  line-height: 1;
+}
+
+/* Date input anchored at the bottom of the chip wrap.
+   showPicker() opens the native picker near this element's position. */
+.log-date-hidden {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+/* ── Three macro stat cards ────────────────────────────────── */
+.log-macro-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.log-macro-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.log-macro-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: var(--ink-400);
+}
+
+.log-macro-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.log-macro-value-amber { color: var(--amber-600); }
+.log-macro-value-plum  { color: var(--plum-600); }
+.log-macro-value-green { color: var(--green-600); }
+
+.log-macro-unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-400);
+}
+
+.log-macro-target {
+  font-size: 12px;
+  color: var(--ink-400);
+  margin-bottom: 2px;
+}
+
+/* ── Progress track ────────────────────────────────────────── */
+.macro-progress-track {
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.macro-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  min-width: 0;
+}
+
+.macro-progress-fill-amber { background: var(--amber-500); }
+.macro-progress-fill-plum  { background: var(--plum-500); }
+.macro-progress-fill-green { background: var(--green-500); }
+
+/* ── "This entry adds" preview ─────────────────────────────── */
+.entry-preview {
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.entry-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.entry-preview-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--ink-400);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.entry-preview-source {
+  font-size: 11px;
+  color: var(--ink-400);
+  text-align: right;
+  line-height: 1.3;
+}
+
+/* Three side-by-side cards */
+.entry-preview-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.entry-preview-card {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: calc(var(--r) - 2px);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entry-preview-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.entry-preview-card-label-amber { color: var(--amber-600); }
+.entry-preview-card-label-plum  { color: var(--plum-600); }
+.entry-preview-card-label-green { color: var(--green-600); }
+
+.entry-preview-card-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-900);
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  line-height: 1;
+}
+
+.entry-preview-card-unit {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-400);
+}
+
+.entry-preview-card-empty {
+  color: var(--ink-300);
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .log-page-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .log-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .log-date-input {
+    max-width: none;
+    flex: 1;
+  }
+
+  .log-macro-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .log-macro-value {
+    font-size: 22px;
+  }
+}

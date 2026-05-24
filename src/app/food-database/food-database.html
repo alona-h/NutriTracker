@@ -1,0 +1,219 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Food Database</h1>
+      <p class="page-sub">{{ foodFacts().length }} food{{ foodFacts().length === 1 ? '' : 's' }} in your library.</p>
+    </div>
+    <button class="btn btn-primary" type="button" (click)="openAdd()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Add Food
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div class="food-db-head-text">
+          <p class="card-title">All Foods</p>
+          <p class="card-desc">Sorted alphabetically</p>
+        </div>
+        <div class="food-search-wrap">
+          <svg class="food-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            class="food-search-input"
+            type="text"
+            placeholder="Search foods…"
+            autocomplete="off"
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+          />
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Serving</th>
+              <th>Calories</th>
+              <th>Protein</th>
+              <th>Fiber</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fact of filteredFoodItems(); track fact.id) {
+              <tr>
+                <td class="food-db-name">{{ fact.name }}</td>
+                <td>{{ fact.servingSize }} {{ fact.unitOfMeasurement }}</td>
+                <td><span class="chip chip-amber">{{ fact.calories }} kcal</span></td>
+                <td><span class="chip chip-plum">{{ fact.protein }}g</span></td>
+                <td><span class="chip chip-green">{{ fact.fiber }}g</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm" type="button" (click)="openEdit(fact)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="12" y1="8" x2="12" y2="12"/>
+                      <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    @if (searchQuery()) {
+                      No foods match "{{ searchQuery() }}".
+                    } @else {
+                      No foods yet. Add one above.
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit food modal -->
+@if (showModal()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-head">
+        <h2 class="modal-title">{{ isEditing ? 'Edit Food' : 'Add Food' }}</h2>
+        <button class="modal-close" type="button" (click)="closeModal()" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="foodForm" (ngSubmit)="submitFood()">
+        <div class="modal-body">
+          <input type="hidden" formControlName="id"/>
+
+          <div class="form-grid">
+            <div class="field food-field-name">
+              <label for="foodName">Name</label>
+              <input id="foodName" type="text" formControlName="name" class="input" placeholder="e.g. Quinoa"/>
+            </div>
+            <div class="field">
+              <label for="servingSize">Serving size</label>
+              <input id="servingSize" type="number" formControlName="servingSize" class="input" placeholder="e.g. 100" min="1"/>
+            </div>
+            <div class="field">
+              <label for="unit">Unit</label>
+              <input id="unit" type="text" formControlName="unitOfMeasurement" class="input" placeholder="g, ml, piece..."/>
+            </div>
+            <div class="field">
+              <label for="calories">Calories (kcal)</label>
+              <input id="calories" type="number" formControlName="calories" class="input" placeholder="e.g. 350" min="0" step="1"/>
+            </div>
+            <div class="field">
+              <label for="protein">Protein (g)</label>
+              <input id="protein" type="number" formControlName="protein" class="input" placeholder="e.g. 8.5" min="0" step="0.1"/>
+            </div>
+            <div class="field">
+              <label for="fiber">Fiber (g)</label>
+              <input id="fiber" type="number" formControlName="fiber" class="input" placeholder="e.g. 5.2" min="0" step="0.1"/>
+            </div>
+          </div>
+
+          @if (!isEditing) {
+            <div class="ai-autofill-section">
+              @switch (autofillState()) {
+                @case ('idle') {
+                  <button
+                    class="btn btn-secondary btn-sm ai-autofill-btn"
+                    type="button"
+                    [disabled]="!canAutofill()"
+                    (click)="estimateWithAI()"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2a10 10 0 1 0 10 10"/>
+                      <path d="M12 8v4l3 3"/>
+                      <path d="M18 2v4h4"/>
+                    </svg>
+                    Estimate with AI
+                  </button>
+                  @if (!canAutofill()) {
+                    <span class="ai-autofill-hint">Type a food name (≥ 3 chars) to enable.</span>
+                  }
+                }
+                @case ('loading') {
+                  <button class="btn btn-secondary btn-sm ai-autofill-btn" type="button" disabled>
+                    <span class="ai-spinner"></span>
+                    Estimating…
+                  </button>
+                }
+                @case ('success') {
+                  <div class="ai-autofill-banner ai-autofill-banner--success">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    AI estimate — verify before saving
+                  </div>
+                }
+                @case ('error') {
+                  <div class="ai-autofill-banner ai-autofill-banner--error">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    {{ autofillError() }}
+                    <button class="ai-retry-link" type="button" (click)="autofillState.set('idle')">Try again</button>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit" [disabled]="foodForm.invalid">
+            {{ isEditing ? 'Save changes' : 'Add food' }}
+          </button>
+          <button class="btn btn-secondary" type="button" (click)="closeModal()">Cancel</button>
+          @if (isEditing) {
+            <span class="spacer"></span>
+            <button
+              class="btn btn-danger-ghost btn-sm"
+              type="button"
+              (click)="deleteFood(foodForm.get('id')!.value)"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/>
+              </svg>
+              Delete food
+            </button>
+          }
+        </div>
+      </form>
+
+    </div>
+  </div>
+}
