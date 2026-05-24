@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Supabase } from '../services/supabase';
+import { GeminiService } from '../services/gemini';
 
 @Component({
   selector: 'app-food-database',
@@ -12,6 +13,7 @@ import { Supabase } from '../services/supabase';
 export class FoodDatabaseComponent implements OnInit {
   private fb       = inject(FormBuilder);
   private supabase = inject(Supabase);
+  private gemini   = inject(GeminiService);
 
   foodFacts  = signal<FoodItem[]>([]);
   showModal  = signal(false);
@@ -19,6 +21,13 @@ export class FoodDatabaseComponent implements OnInit {
   foodForm!: FormGroup;
 
   searchQuery = signal('');
+
+  autofillState = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
+  autofillError = signal<string | null>(null);
+
+  canAutofill = computed(() =>
+    (this.foodForm?.get('name')?.value ?? '').trim().length >= 3
+  );
 
   filteredFoodItems = computed(() => {
     const q = this.searchQuery().toLowerCase().trim();
@@ -53,17 +62,52 @@ export class FoodDatabaseComponent implements OnInit {
   openAdd(): void {
     this.isEditing = false;
     this.buildForm();
+    this.autofillState.set('idle');
+    this.autofillError.set(null);
     this.showModal.set(true);
   }
 
   openEdit(fact: FoodItem): void {
     this.isEditing = true;
     this.buildForm(fact);
+    this.autofillState.set('idle');
+    this.autofillError.set(null);
     this.showModal.set(true);
   }
 
   closeModal(): void {
+    this.autofillState.set('idle');
+    this.autofillError.set(null);
     this.showModal.set(false);
+  }
+
+  async estimateWithAI(): Promise<void> {
+    const name = (this.foodForm.get('name')?.value ?? '').trim();
+    if (!name) return;
+
+    this.autofillState.set('loading');
+    this.autofillError.set(null);
+
+    const controls = ['servingSize', 'unitOfMeasurement', 'calories', 'protein', 'fiber'];
+    controls.forEach(c => this.foodForm.get(c)?.disable());
+
+    try {
+      const data = await this.gemini.autofillFood(name);
+
+      this.foodForm.patchValue({
+        servingSize:       data.servingSize,
+        unitOfMeasurement: data.unitOfMeasurement,
+        calories:          data.calories,
+        protein:           data.protein,
+        fiber:             data.fiber,
+      });
+      controls.forEach(c => this.foodForm.get(c)?.enable());
+      this.autofillState.set('success');
+    } catch (err: unknown) {
+      controls.forEach(c => this.foodForm.get(c)?.enable());
+      this.autofillError.set(err instanceof Error ? err.message : 'Estimation failed.');
+      this.autofillState.set('error');
+    }
   }
 
   submitFood(): void {
