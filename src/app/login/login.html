@@ -1,0 +1,93 @@
+<div class="auth-page">
+  <!-- Radial glow backdrop -->
+  <div class="auth-glow auth-glow-1"></div>
+  <div class="auth-glow auth-glow-2"></div>
+  <div class="auth-glow auth-glow-3"></div>
+
+  <!-- Top bar -->
+  <div class="auth-topbar">
+    <div class="auth-brand-row">
+      <div class="auth-brand-mark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+      </div>
+      <span class="auth-brand-name">NutriTracker</span>
+    </div>
+    <a class="auth-help-link" href="mailto:support@nutritracker.local">Need help? Contact support</a>
+  </div>
+
+  <!-- Card -->
+  <div class="auth-card">
+    <div>
+      <div class="auth-eyebrow">Welcome back</div>
+      <h1 class="auth-heading">Pick up where you left off</h1>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <div class="auth-field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          class="auth-input"
+          [class.auth-input--error]="error()"
+        />
+      </div>
+
+      <div class="auth-field auth-field-password">
+        <div class="auth-label-row">
+          <label for="password">Password</label>
+          <a class="auth-forgot" href="#">Forgot password?</a>
+        </div>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          class="auth-input"
+          [class.auth-input--error]="error()"
+        />
+        @if (error()) {
+          <p class="auth-error">{{ error() }}</p>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="auth-submit"
+        [disabled]="form.invalid || isLoading()"
+      >
+        @if (isLoading()) {
+          <span class="auth-spinner"></span>
+          Signing in...
+        } @else {
+          Log in
+        }
+      </button>
+
+    </form>
+  </div>
+
+  <!-- Feature footer -->
+  <div class="auth-footer-strip">
+    <div class="auth-feature-pill">
+      <span class="auth-feature-dot"></span>
+      AI auto-fill
+    </div>
+    <div class="auth-feature-pill">
+      <span class="auth-feature-dot"></span>
+      Daily coaching
+    </div>
+    <div class="auth-feature-pill">
+      <span class="auth-feature-dot"></span>
+      Weekly trends
+    </div>
+  </div>
+</div>

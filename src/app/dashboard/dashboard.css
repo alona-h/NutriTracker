@@ -1,94 +1,402 @@
-.heatmap-container {
+/* ── Date strip ────────────────────────────────────────────── */
+.date-strip {
   display: flex;
   gap: 8px;
-  padding: 20px 24px;
+  overflow-x: auto;
+  padding-bottom: 4px;
 }
 
-.heatmap-labels-y {
+.date-chip {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 3px;
-  padding-top: 0px; /* Aligns with grid */
-  color: var(--text-muted);
-  font-size: 10px;
-  line-height: 12px;
-  text-align: right;
-  min-width: 24px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.heatmap-label-y {
-  height: 12px;
+.date-chip:hover {
+  background: var(--surface-2);
+}
+
+.date-chip-active {
+  background: var(--brand-50);
+  border-color: var(--brand-400);
+}
+
+.night .date-chip-active {
+  background: var(--brand-100);
+}
+
+.date-chip-weekday {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--ink-400);
+}
+
+.date-chip-active .date-chip-weekday {
+  color: var(--brand-600);
+}
+
+.date-chip-day {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-800);
+}
+
+.date-chip-active .date-chip-day {
+  color: var(--brand-700);
+}
+
+/* ── Summary hero ──────────────────────────────────────────── */
+.summary-hero {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 16px;
+}
+
+/* ── Goal rings ────────────────────────────────────────────── */
+.rings-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rings-card-heading {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: var(--ink-400);
+}
+
+.rings-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+}
+
+.ring-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 180px;
+}
+
+.ring-svg-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 160px;
+}
+
+.ring-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  transform: rotate(-90deg);
+}
+
+.ring-track {
+  fill: none;
+  stroke: var(--surface-2);
+  stroke-width: 10;
+}
+
+.ring-fill {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1);
+}
+
+.ring-fill-amber { stroke: var(--amber-500); }
+.ring-fill-plum  { stroke: var(--plum-500); }
+.ring-fill-green { stroke: var(--green-500); }
+
+.ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  gap: 2px;
+}
+
+.ring-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-900);
+}
+
+.ring-unit {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-400);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ring-pct {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-500);
+  margin-top: 1px;
+}
+
+.ring-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.ring-name-amber { color: var(--amber-600); }
+.ring-name-plum  { color: var(--plum-600); }
+.ring-name-green { color: var(--green-600); }
+
+.rings-targets {
+  font-size: 12px;
+  color: var(--ink-400);
+  text-align: center;
+}
+
+/* ── AI Coach card ─────────────────────────────────────────── */
+.ai-coach-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-coach-head {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  gap: 8px;
 }
 
-.heatmap-grid-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 8px; /* Room for scrollbar */
+.ai-coach-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--brand-100);
+  color: var(--brand-600);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
 }
 
-.heatmap-grid {
+.ai-coach-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-800);
+}
+
+.ai-coach-message {
+  font-size: 13.5px;
+  color: var(--ink-600);
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+.ai-coach-btn {
+  align-self: flex-start;
+}
+
+/* ── 7-day trend — combined grouped chart ─────────────────── */
+.trend-chart-header {
   display: flex;
-  gap: 3px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
 }
 
-.heatmap-week {
+.trend-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.trend-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.trend-legend-dot-amber { background: var(--amber-500); }
+.trend-legend-dot-plum  { background: var(--plum-500); }
+.trend-legend-dot-green { background: var(--green-500); }
+
+.trend-legend-text {
+  font-size: 11px;
+  color: var(--ink-500);
+  margin-right: 4px;
+}
+
+/* Chart area: bars zone */
+.trend-bars-zone {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 80px;
+  overflow: visible;
+}
+
+/* Single dotted target line for 100% of daily goal */
+.trend-target-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1.5px dashed var(--ink-300);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Day column: bars + label stacked */
+.trend-col-wrap {
+  flex: 1;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
 }
 
-.heatmap-day {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  transition: transform 0.1s ease;
+/* Hover tooltip — always dark regardless of theme */
+.trend-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1c1c1e;
+  color: #f5f5f7;
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-width: 160px;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
 }
 
-.heatmap-day:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 0 1px var(--text-primary);
+.trend-col-wrap:hover .trend-tooltip {
+  opacity: 1;
 }
 
-.heatmap-day.hidden {
-  visibility: hidden;
+.trend-tooltip-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: rgba(245,245,247,0.55);
+  margin-bottom: 5px;
 }
 
-/* Base level 0 (empty) */
-.heatmap-day.empty {
-  background: #e2e8f0; /* darker light gray for better contrast */
-  border: 1px solid #cbd5e1;
+.trend-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 2px;
 }
 
-/* Fiber Scale (Green) */
-.level-fiber-1 { background: rgba(16, 185, 129, 0.3); border: 1px solid rgba(16, 185, 129, 0.1); }
-.level-fiber-2 { background: rgba(16, 185, 129, 0.6); border: 1px solid rgba(16, 185, 129, 0.2); }
-.level-fiber-3 { background: #10b981; border: 1px solid #059669; }
-.level-fiber-4 { background: #059669; border: 1px solid #047857; }
+.trend-tooltip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
-/* Calorie Scale (Amber) */
-.level-calorie-1 { background: rgba(245, 158, 11, 0.3); border: 1px solid rgba(245, 158, 11, 0.1); }
-.level-calorie-2 { background: rgba(245, 158, 11, 0.6); border: 1px solid rgba(245, 158, 11, 0.2); }
-.level-calorie-3 { background: #f59e0b; border: 1px solid #d97706; }
-.level-calorie-4 { background: #d97706; border: 1px solid #b45309; }
+.trend-tooltip-dot-amber { background: var(--amber-400, var(--amber-500)); }
+.trend-tooltip-dot-plum  { background: var(--plum-400,  var(--plum-500)); }
+.trend-tooltip-dot-green { background: var(--green-400, var(--green-500)); }
 
-/* Dark mode overrides */
-.dark .heatmap-day.empty { background: #1f2937; border: 1px solid #374151; }
+.trend-tooltip-label {
+  flex: 1;
+  color: rgba(255,255,255,0.75);
+}
 
-.dark .level-fiber-1 { background: rgba(16, 185, 129, 0.25); border: 1px solid rgba(16, 185, 129, 0.1); }
-.dark .level-fiber-2 { background: rgba(16, 185, 129, 0.5); border: 1px solid rgba(16, 185, 129, 0.2); }
-.dark .level-fiber-3 { background: #10b981; border: 1px solid rgba(0, 0, 0, 0.2); }
-.dark .level-fiber-4 { background: #059669; border: 1px solid rgba(0, 0, 0, 0.2); }
+.trend-tooltip-val {
+  font-weight: 600;
+  color: #fff;
+}
 
-.dark .level-calorie-1 { background: rgba(245, 158, 11, 0.25); border: 1px solid rgba(245, 158, 11, 0.1); }
-.dark .level-calorie-2 { background: rgba(245, 158, 11, 0.5); border: 1px solid rgba(245, 158, 11, 0.2); }
-.dark .level-calorie-3 { background: #f59e0b; border: 1px solid rgba(0, 0, 0, 0.2); }
-.dark .level-calorie-4 { background: #d97706; border: 1px solid rgba(0, 0, 0, 0.2); }
+.trend-tooltip-pct {
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  margin-left: 4px;
+}
 
-@media (max-width: 768px) {
-  .heatmap-container { padding: 16px; }
-  .heatmap-day { width: 10px; height: 10px; }
-  .heatmap-label-y { height: 10px; font-size: 9px; line-height: 10px; }
+/* 3 bars side-by-side within one day column */
+.trend-col-bars {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.trend-bar {
+  flex: 1;
+  max-width: 10px;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.45s cubic-bezier(.4,0,.2,1);
+}
+
+.trend-bar-amber { background: var(--amber-500); }
+.trend-bar-plum  { background: var(--plum-500); }
+.trend-bar-green { background: var(--green-500); }
+
+.trend-day-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-400);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+/* ── Entry table ───────────────────────────────────────────── */
+.entry-name {
+  font-weight: 500;
+  color: var(--ink-900);
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .summary-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .rings-row { gap: 6px; }
+  .ring-svg-wrap { max-width: 110px; }
+  .ring-value { font-size: 16px; }
+  .ring-unit  { font-size: 9px; }
+  .ring-pct   { font-size: 9px; }
 }
