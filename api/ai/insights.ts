@@ -1,5 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import axios from 'axios';
+
+const GEMINI_URL =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 interface InsightsBody {
   profile:      { targetCalories: number; targetProtein: number; targetFiber: number };
@@ -14,9 +17,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const { profile, todayIntakes, weekTotals, question } = req.body as InsightsBody;
+  try {
+    const { profile, todayIntakes, weekTotals, question } = req.body as InsightsBody;
 
-  const prompt = `You are an expert nutrition coach. Analyse the user's food log and return ONLY a JSON object with this exact shape:
+    const prompt = `You are an expert nutrition coach. Analyse the user's food log and return ONLY a JSON object with this exact shape:
 {
   "headline": "string (1–2 sentence motivating insight, present tense)",
   "analyzedAgo": "string (e.g. '2 min ago' — just use '1 min ago')",
@@ -46,11 +50,15 @@ Rules:
 - working.days: true means ≥80% of fiber target was hit on that day (oldest first, 7 days)
 - Respond with ONLY the JSON object. No markdown fences.`;
 
-  try {
-    const genAI  = new GoogleGenerativeAI(process.env['GEMINI_API_KEY'] ?? '');
-    const gemini = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-    const result = await gemini.generateContent(prompt);
-    const parsed = JSON.parse(result.response.text().trim());
+    const apiKey = process.env['GEMINI_API_KEY'] ?? '';
+    const { data } = await axios.post(
+      `${GEMINI_URL}?key=${apiKey}`,
+      { contents: [{ parts: [{ text: prompt }] }] },
+    );
+
+    const text   = (data as { candidates: { content: { parts: { text: string }[] } }[] })
+      .candidates[0].content.parts[0].text.trim();
+    const parsed = JSON.parse(text);
     res.status(200).json(parsed);
   } catch {
     res.status(422).json({ error: 'Could not generate insights. Try again later.' });
