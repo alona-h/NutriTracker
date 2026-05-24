@@ -143,13 +143,50 @@
           </div>
 
           @if (!isEditing) {
-            <div class="ai-autofill-banner">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                <path d="M12 17h.01"/>
-                <circle cx="12" cy="12" r="10"/>
-              </svg>
-              <span>AI auto-fill coming soon. Enter values manually for now.</span>
+            <div class="ai-autofill-section">
+              @switch (autofillState()) {
+                @case ('idle') {
+                  <button
+                    class="btn btn-secondary btn-sm ai-autofill-btn"
+                    type="button"
+                    [disabled]="!canAutofill()"
+                    (click)="estimateWithAI()"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2a10 10 0 1 0 10 10"/>
+                      <path d="M12 8v4l3 3"/>
+                      <path d="M18 2v4h4"/>
+                    </svg>
+                    Estimate with AI
+                  </button>
+                  @if (!canAutofill()) {
+                    <span class="ai-autofill-hint">Type a food name (≥ 3 chars) to enable.</span>
+                  }
+                }
+                @case ('loading') {
+                  <button class="btn btn-secondary btn-sm ai-autofill-btn" type="button" disabled>
+                    <span class="ai-spinner"></span>
+                    Estimating…
+                  </button>
+                }
+                @case ('success') {
+                  <div class="ai-autofill-banner ai-autofill-banner--success">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    AI estimate — verify before saving
+                  </div>
+                }
+                @case ('error') {
+                  <div class="ai-autofill-banner ai-autofill-banner--error">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    {{ autofillError() }}
+                    <button class="ai-retry-link" type="button" (click)="autofillState.set('idle')">Try again</button>
+                  </div>
+                }
+              }
             </div>
           }
         </div>
