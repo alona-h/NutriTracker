@@ -142,7 +142,7 @@
             </div>
           </div>
 
-          @if (!isEditing) {
+          @if (!isEditing && aiEnabled()) {
             <div class="ai-autofill-section">
               @switch (autofillState()) {
                 @case ('idle') {

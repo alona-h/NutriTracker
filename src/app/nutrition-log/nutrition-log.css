@@ -210,6 +210,31 @@
   letter-spacing: 2px;
 }
 
+/* ── Night mode: boost contrast for low-surface elements ───── */
+.night .log-date-chip {
+  background: rgba(255 255 255 / .08);
+  border-color: rgba(255 255 255 / .14);
+  color: var(--ink-600);
+}
+
+.night .log-macro-card {
+  border-color: rgba(255 255 255 / .1);
+}
+
+.night .macro-progress-track {
+  background: rgba(255 255 255 / .08);
+}
+
+.night .entry-preview {
+  background: rgba(255 255 255 / .04);
+  border-color: rgba(255 255 255 / .08);
+}
+
+.night .entry-preview-card {
+  background: rgba(255 255 255 / .07);
+  border-color: rgba(255 255 255 / .12);
+}
+
 /* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .log-page-header {

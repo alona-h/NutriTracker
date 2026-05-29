@@ -13,6 +13,16 @@ export class AuthService {
 
   currentUser    = signal<AppUser | null>(null);
   userProfile    = signal<UserProfile>(DEFAULT_PROFILE);
+  aiEnabled      = signal<boolean>(this.readAiEnabled());
+
+  private readAiEnabled(): boolean {
+    try { return localStorage.getItem('ai_enabled') !== 'false'; } catch { return true; }
+  }
+
+  setAiEnabled(value: boolean): void {
+    try { localStorage.setItem('ai_enabled', String(value)); } catch { /* SSR */ }
+    this.aiEnabled.set(value);
+  }
 
   init(): void {
     this.supabaseService.authClient.getSession().then(({ data }) => {

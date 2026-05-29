@@ -15,8 +15,13 @@ export class ProfileComponent implements OnInit {
   private supabase = inject(Supabase);
   private auth     = inject(AuthService);
 
-  saving  = signal(false);
-  saved   = signal(false);
+  saving    = signal(false);
+  saved     = signal(false);
+  aiEnabled = this.auth.aiEnabled;
+
+  toggleAi(): void {
+    this.auth.setAiEnabled(!this.auth.aiEnabled());
+  }
 
   form = this.fb.group({
     name:           [''],

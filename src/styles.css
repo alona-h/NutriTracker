@@ -696,9 +696,26 @@ html, body {
   border-radius: var(--r-md);
 }
 
+.night .card {
+  border-color: rgba(255 255 255 / .12);
+}
+
+.night .modal {
+  border-color: rgba(255 255 255 / .12);
+}
+
+.night .modal-head,
+.night .modal-footer {
+  border-color: rgba(255 255 255 / .08);
+}
+
+.night .card-head {
+  border-color: rgba(255 255 255 / .08);
+}
+
 .night .ai-card {
   background: linear-gradient(135deg, #2C1F18 0%, #2F2018 50%, #2D1E26 100%);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255 255 255 / .1);
 }
 
 .ai-inset {
@@ -708,8 +725,8 @@ html, body {
 }
 
 .night .ai-inset {
-  background: rgb(255 255 255 / .04);
-  border: 1px solid rgb(255 255 255 / .06);
+  background: rgb(255 255 255 / .07);
+  border: 1px solid rgb(255 255 255 / .12);
 }
 
 /* ── Modal overlay ─────────────────────────────────────────────── */

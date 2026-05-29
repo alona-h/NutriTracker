@@ -2,6 +2,7 @@ import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Supabase } from '../services/supabase';
 import { GeminiService } from '../services/gemini';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-food-database',
@@ -21,6 +22,8 @@ export class FoodDatabaseComponent implements OnInit {
   foodForm!: FormGroup;
 
   searchQuery = signal('');
+
+  aiEnabled = inject(AuthService).aiEnabled;
 
   autofillState = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
   autofillError = signal<string | null>(null);

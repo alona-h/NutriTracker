@@ -7,6 +7,7 @@
 .ss-trigger {
   width: 100%;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
@@ -43,8 +44,10 @@
 /* ── Chevron ────────────────────────────────────────────────── */
 .ss-chevron {
   flex-shrink: 0;
+  display: inline-block; /* override Tailwind preflight svg { display: block } */
   color: var(--ink-400);
   transition: transform 0.2s ease;
+  vertical-align: middle;
 }
 
 .ss-chevron--up {

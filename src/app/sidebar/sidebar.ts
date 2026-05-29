@@ -16,6 +16,8 @@ export class SidebarComponent {
 
   private auth = inject(AuthService);
 
+  aiEnabled = this.auth.aiEnabled;
+
   userInitial = computed(() => {
     const user = this.auth.currentUser();
     if (!user) return '?';

@@ -25,6 +25,8 @@ export class DashboardComponent implements OnInit {
   private auth     = inject(AuthService);
   private gemini   = inject(GeminiService);
 
+  aiEnabled = this.auth.aiEnabled;
+
   loading      = signal(true);
   aiHeadline   = signal<string | null>(null);
   aiLoading    = signal(false);
@@ -130,7 +132,7 @@ export class DashboardComponent implements OnInit {
     this.allIntakes.set(intakes);
     this.weekTotals.set(weekTotals);
     this.loading.set(false);
-    this.loadAiHeadline();
+    if (this.aiEnabled()) this.loadAiHeadline();
   }
 
   private loadAiHeadline(): void {

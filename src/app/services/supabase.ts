@@ -47,7 +47,7 @@ export class Supabase {
 
   async getNutritionProfile(): Promise<UserProfile | null> {
     const { data, error } = await this.supabase
-      .from('user_profiles')
+      .from('UserProfile')
       .select('*')
       .single();
 
@@ -55,16 +55,16 @@ export class Supabase {
 
     return {
       id:             data['id'],
-      authId:         data['auth_id'],
+      authId:         data['auth_user_id'],
       name:           data['name'],
       age:            data['age'],
       sex:            data['sex'],
-      heightCm:       data['height_cm'],
-      weightKg:       data['weight_kg'],
-      activityLevel:  data['activity_level'],
-      targetCalories: data['target_calories'] ?? 2000,
-      targetProtein:  data['target_protein']  ?? 50,
-      targetFiber:    data['target_fiber']     ?? 25,
+      heightCm:       data['heightCm'],
+      weightKg:       data['weightKg'],
+      activityLevel:  data['activityLevel'],
+      targetCalories: data['targetCalories'] ?? 2000,
+      targetProtein:  data['targetProtein']  ?? 50,
+      targetFiber:    data['targetFiber']    ?? 25,
     } as UserProfile;
   }
 
@@ -74,19 +74,19 @@ export class Supabase {
     if (!authId) return;
 
     const { error } = await this.supabase
-      .from('user_profiles')
+      .from('UserProfile')
       .upsert({
-        auth_id:        authId,
-        name:           profile.name,
-        age:            profile.age,
-        sex:            profile.sex,
-        height_cm:      profile.heightCm,
-        weight_kg:      profile.weightKg,
-        activity_level: profile.activityLevel,
-        target_calories: profile.targetCalories,
-        target_protein:  profile.targetProtein,
-        target_fiber:    profile.targetFiber,
-      }, { onConflict: 'auth_id' });
+        auth_user_id:  authId,
+        name:          profile.name,
+        age:           profile.age,
+        sex:           profile.sex,
+        heightCm:      profile.heightCm,
+        weightKg:      profile.weightKg,
+        activityLevel: profile.activityLevel,
+        targetCalories: profile.targetCalories,
+        targetProtein:  profile.targetProtein,
+        targetFiber:    profile.targetFiber,
+      }, { onConflict: 'auth_user_id' });
 
     if (error) console.error('Error upserting nutrition profile:', error);
   }

@@ -5,20 +5,29 @@
       <h1 class="page-title">Insights</h1>
       <p class="page-sub">Coaching feedback on today's intake based on your goals and patterns.</p>
     </div>
-    <div class="insights-header-actions">
-      <button class="btn btn-ghost btn-sm" type="button" (click)="refresh()" [disabled]="loadingAnalysis()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" [class.spin]="loadingAnalysis()">
-          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-        </svg>
-        Refresh analysis
-      </button>
-    </div>
+    @if (aiEnabled()) {
+      <div class="insights-header-actions">
+        <button class="btn btn-ghost btn-sm" type="button" (click)="refresh()" [disabled]="loadingAnalysis()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" [class.spin]="loadingAnalysis()">
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          Refresh analysis
+        </button>
+      </div>
+    }
   </div>
 
   <div class="content">
 
-    @if (loadingAnalysis()) {
+    @if (!aiEnabled()) {
+      <div class="card insights-error-card">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>AI features are currently disabled.</p>
+      </div>
+    } @else if (loadingAnalysis()) {
       <div class="insights-skeleton card ai-card">
         <div class="skeleton-line skeleton-line--wide"></div>
         <div class="skeleton-line skeleton-line--mid"></div>
@@ -145,6 +154,7 @@
     }
 
     <!-- ── Ask the Coach ── -->
+    @if (aiEnabled()) {
     <div class="card insights-ask-card">
       <div class="card-head">
         <div class="card-head-icon insights-ask-icon">
@@ -191,6 +201,7 @@
         </button>
       </div>
     </div>
+    }
 
   </div>
 </div>

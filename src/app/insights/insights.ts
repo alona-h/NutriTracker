@@ -21,6 +21,8 @@ export class InsightsComponent implements OnInit {
   private auth     = inject(AuthService);
   private gemini   = inject(GeminiService);
 
+  aiEnabled = this.auth.aiEnabled;
+
   loadingAnalysis = signal(false);
   insight         = signal<InsightResponse | null>(null);
   error           = signal<string | null>(null);
@@ -30,7 +32,7 @@ export class InsightsComponent implements OnInit {
   loadingAnswer = signal(false);
 
   ngOnInit(): void {
-    this.loadInsights();
+    if (this.aiEnabled()) this.loadInsights();
   }
 
   async loadInsights(): Promise<void> {

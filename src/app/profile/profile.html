@@ -91,6 +91,37 @@
       </form>
     </div>
 
+    <!-- AI features -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div>
+          <p class="card-title">AI features</p>
+          <p class="card-desc">Autofill food nutrition and personalized coaching</p>
+        </div>
+      </div>
+      <div class="profile-toggle-row">
+        <div>
+          <p class="profile-toggle-label">Enable AI Coach &amp; Autofill</p>
+          <p class="profile-toggle-desc">Requires a Groq API key configured on the server</p>
+        </div>
+        <button
+          class="toggle-btn"
+          [class.toggle-btn--on]="aiEnabled()"
+          type="button"
+          (click)="toggleAi()"
+          [attr.aria-checked]="aiEnabled()"
+          role="switch"
+        >
+          <span class="toggle-thumb"></span>
+        </button>
+      </div>
+    </div>
+
     <!-- Daily targets -->
     <div class="card">
       <div class="card-head">
