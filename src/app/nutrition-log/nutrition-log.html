@@ -1,0 +1,267 @@
+<div class="page">
+  <div class="page-header log-page-header">
+    <div>
+      <h1 class="page-title">Nutrition Log</h1>
+      <p class="page-sub">{{ selectedDate() | date:'EEEE, MMMM d, y' }}</p>
+    </div>
+    <div class="log-header-actions">
+      <div class="log-date-chip-wrap">
+        <button class="btn log-date-chip" type="button" (click)="openDatePicker(datePicker)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span class="log-date-chip-text">{{ selectedDate() === today ? 'Today' : (selectedDate() | date:'MMM d, y') }}</span>
+        </button>
+        <input
+          #datePicker
+          type="date"
+          class="log-date-hidden"
+          [max]="today"
+          [ngModel]="selectedDate()"
+          (ngModelChange)="selectedDate.set($event)"
+        />
+      </div>
+      <button class="btn btn-primary" type="button" (click)="openAdd()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Entry
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Three macro stat cards -->
+    <div class="log-macro-strip">
+
+      <div class="card card-pad log-macro-card">
+        <div class="log-macro-label">Calories</div>
+        <div class="log-macro-value log-macro-value-amber">
+          {{ selectedTotals().calories | number:'1.0-0' }}
+          <span class="log-macro-unit">kcal</span>
+        </div>
+        <div class="log-macro-target">of {{ userProfile().targetCalories }} kcal</div>
+        <div class="macro-progress-track">
+          <div
+            class="macro-progress-fill macro-progress-fill-amber"
+            [style.width.%]="pct(selectedTotals().calories, userProfile().targetCalories)"
+          ></div>
+        </div>
+      </div>
+
+      <div class="card card-pad log-macro-card">
+        <div class="log-macro-label">Protein</div>
+        <div class="log-macro-value log-macro-value-plum">
+          {{ selectedTotals().protein | number:'1.0-1' }}
+          <span class="log-macro-unit">g</span>
+        </div>
+        <div class="log-macro-target">of {{ userProfile().targetProtein }}g</div>
+        <div class="macro-progress-track">
+          <div
+            class="macro-progress-fill macro-progress-fill-plum"
+            [style.width.%]="pct(selectedTotals().protein, userProfile().targetProtein)"
+          ></div>
+        </div>
+      </div>
+
+      <div class="card card-pad log-macro-card">
+        <div class="log-macro-label">Fiber</div>
+        <div class="log-macro-value log-macro-value-green">
+          {{ selectedTotals().fiber | number:'1.0-1' }}
+          <span class="log-macro-unit">g</span>
+        </div>
+        <div class="log-macro-target">of {{ userProfile().targetFiber }}g</div>
+        <div class="macro-progress-track">
+          <div
+            class="macro-progress-fill macro-progress-fill-green"
+            [style.width.%]="pct(selectedTotals().fiber, userProfile().targetFiber)"
+          ></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Entries table -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+            <path d="M7 2v20"/>
+            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+          </svg>
+        </div>
+        <div>
+          <p class="card-title">Entries</p>
+          <p class="card-desc">{{ selectedDateIntakes().length }} entr{{ selectedDateIntakes().length === 1 ? 'y' : 'ies' }} logged</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Food</th>
+              <th>Portion</th>
+              <th>Calories</th>
+              <th>Protein</th>
+              <th>Fiber</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (intake of selectedDateIntakes(); track intake.id) {
+              <tr>
+                <td class="entry-food-name">{{ intake.food.name }}</td>
+                <td>{{ intake.intakeSize }} {{ intake.food.unitOfMeasurement }}</td>
+                <td><span class="chip chip-amber">{{ intake.calorieIntake | number:'1.0-0' }} kcal</span></td>
+                <td><span class="chip chip-plum">{{ intake.proteinIntake | number:'1.0-1' }}g</span></td>
+                <td><span class="chip chip-green">{{ intake.fiberIntake | number:'1.1-1' }}g</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm" type="button" (click)="openEdit(intake)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon">
+                      <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/>
+                      <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+                    </svg>
+                    No entries for this date. Add one above.
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add / Edit entry modal -->
+@if (showModal()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-head">
+        <h2 class="modal-title">{{ isEditing ? 'Edit Entry' : 'Add Entry' }}</h2>
+        <button class="modal-close" type="button" (click)="closeModal()" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="entryForm" (ngSubmit)="submitEntry()">
+        <div class="modal-body">
+          <input type="hidden" formControlName="id"/>
+
+          <div class="field">
+            <label>Food</label>
+            <app-searchable-select
+              formControlName="foodId"
+              [options]="foodOptions()"
+              placeholder="Search and select a food..."
+            />
+          </div>
+
+          <div class="field">
+            <label for="entryPortion">Portion{{ selectedFoodUnit() ? ' (' + selectedFoodUnit() + ')' : '' }}</label>
+            <input
+              id="entryPortion"
+              type="number"
+              formControlName="intakeSize"
+              class="input"
+              placeholder="e.g. 150"
+              min="1"
+            />
+          </div>
+
+          <!-- "This entry adds…" nutrition preview — always visible -->
+          <div class="entry-preview">
+            <div class="entry-preview-header">
+              <p class="entry-preview-title">This entry adds</p>
+              @if (previewMacros()) {
+                <span class="entry-preview-source">
+                  Calculated from {{ entryForm.get('intakeSize')?.value }}{{ selectedFoodUnit() }} of {{ selectedFoodName() }}
+                </span>
+              }
+            </div>
+            <div class="entry-preview-cards">
+              <div class="entry-preview-card">
+                <span class="entry-preview-card-label entry-preview-card-label-amber">Calories</span>
+                @if (previewMacros()) {
+                  <div class="entry-preview-card-value">
+                    {{ previewMacros()!.calories | number:'1.0-0' }}
+                    <span class="entry-preview-card-unit">kcal</span>
+                  </div>
+                } @else {
+                  <div class="entry-preview-card-value entry-preview-card-empty">---</div>
+                }
+              </div>
+              <div class="entry-preview-card">
+                <span class="entry-preview-card-label entry-preview-card-label-plum">Protein</span>
+                @if (previewMacros()) {
+                  <div class="entry-preview-card-value">
+                    {{ previewMacros()!.protein | number:'1.0-1' }}
+                    <span class="entry-preview-card-unit">g</span>
+                  </div>
+                } @else {
+                  <div class="entry-preview-card-value entry-preview-card-empty">---</div>
+                }
+              </div>
+              <div class="entry-preview-card">
+                <span class="entry-preview-card-label entry-preview-card-label-green">Fiber</span>
+                @if (previewMacros()) {
+                  <div class="entry-preview-card-value">
+                    {{ previewMacros()!.fiber | number:'1.0-1' }}
+                    <span class="entry-preview-card-unit">g</span>
+                  </div>
+                } @else {
+                  <div class="entry-preview-card-value entry-preview-card-empty">---</div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit" [disabled]="entryForm.invalid">
+            {{ isEditing ? 'Save changes' : 'Add to log' }}
+          </button>
+          <button class="btn btn-secondary" type="button" (click)="closeModal()">Cancel</button>
+          @if (isEditing) {
+            <span class="spacer"></span>
+            <button
+              class="btn btn-danger-ghost btn-sm"
+              type="button"
+              (click)="deleteEntry(entryForm.get('id')!.value)"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/>
+              </svg>
+              Delete entry
+            </button>
+          }
+        </div>
+      </form>
+
+    </div>
+  </div>
+}

@@ -85,7 +85,6 @@ export class SearchableSelectComponent implements ControlValueAccessor {
     const opening = !this.isOpen();
     if (opening) {
       this.searchQuery.set('');
-      // Measure trigger position so the fixed panel aligns with it
       const trigger = (this.elRef.nativeElement as HTMLElement).querySelector('.ss-trigger');
       if (trigger) {
         const rect = trigger.getBoundingClientRect();
@@ -96,6 +95,14 @@ export class SearchableSelectComponent implements ControlValueAccessor {
     }
     this.isOpen.set(opening);
     this.onTouched();
+    if (opening) {
+      // Wait one tick for @if to render the panel, then focus the search input
+      setTimeout(() => {
+        const input = (this.elRef.nativeElement as HTMLElement)
+          .querySelector('.ss-search-input') as HTMLInputElement | null;
+        input?.focus();
+      }, 0);
+    }
   }
 
   select(value: number): void {

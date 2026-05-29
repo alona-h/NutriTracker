@@ -1,0 +1,39 @@
+.sidebar-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Logo image ──────────────────────────────────────────────── */
+.sidebar-logo-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* ── Night mode toggle ───────────────────────────────────────── */
+.sidebar-theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: var(--ink-500);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-theme-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink-800);
+}
+
+.sidebar-theme-btn-active {
+  color: var(--brand-600);
+}

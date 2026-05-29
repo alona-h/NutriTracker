@@ -1,43 +1,54 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { Supabase } from './supabase';
 
+export const DEFAULT_PROFILE: UserProfile = {
+  targetCalories: 2000,
+  targetProtein:  50,
+  targetFiber:    25,
+};
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private supabaseService = inject(Supabase);
 
-  currentUser = signal<AppUser | null>(null);
+  currentUser    = signal<AppUser | null>(null);
+  userProfile    = signal<UserProfile>(DEFAULT_PROFILE);
 
-  /**
-   * Initialise auth state listener. Call this once from app.ts ngOnInit.
-   * Supabase automatically persists the session in localStorage —
-   * no manual localStorage management is needed.
-   */
   init(): void {
-    // Restore existing session on page load
     this.supabaseService.authClient.getSession().then(({ data }) => {
       if (data.session) {
-        this.loadUserProfile();
+        this.loadUserData();
       }
     });
 
-    // React to future sign-in / sign-out events
-    this.supabaseService.authClient.onAuthStateChange((event, session) => {
+    this.supabaseService.authClient.onAuthStateChange((_, session) => {
       if (session) {
-        this.loadUserProfile();
+        this.loadUserData();
       } else {
         this.currentUser.set(null);
+        this.userProfile.set(DEFAULT_PROFILE);
       }
     });
   }
 
-  private async loadUserProfile(): Promise<void> {
-    const user = await this.supabaseService.getUserProfile();
+  private async loadUserData(): Promise<void> {
+    const [user, profile] = await Promise.all([
+      this.supabaseService.getAppUser(),
+      this.supabaseService.getNutritionProfile(),
+    ]);
     this.currentUser.set(user);
+    this.userProfile.set(profile ?? DEFAULT_PROFILE);
+  }
+
+  async refreshProfile(): Promise<void> {
+    const profile = await this.supabaseService.getNutritionProfile();
+    this.userProfile.set(profile ?? DEFAULT_PROFILE);
   }
 
   async logout(): Promise<void> {
     await this.supabaseService.signOut();
     this.currentUser.set(null);
+    this.userProfile.set(DEFAULT_PROFILE);
   }
 
   isAuthenticated(): boolean {

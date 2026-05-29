@@ -1,22 +1,20 @@
 import { Component, Input, Output, EventEmitter, inject, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { NgClass } from '@angular/common';
 import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, NgClass],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
+  styleUrl: './sidebar.css',
 })
 export class SidebarComponent {
-  @Input() isDark = false;
-  @Output() themeToggle = new EventEmitter<void>();
+  @Input() isNight = false;
+  @Output() themeToggle  = new EventEmitter<void>();
   @Output() closeSidebar = new EventEmitter<void>();
 
   private auth = inject(AuthService);
-
-  currentUser = computed(() => this.auth.currentUser());
 
   userInitial = computed(() => {
     const user = this.auth.currentUser();
@@ -34,10 +32,4 @@ export class SidebarComponent {
     this.auth.logout();
     this.closeSidebar.emit();
   }
-
-  navItems = [
-    { label: 'Dashboard', route: '/dashboard', icon: 'dashboard' },
-    { label: 'Food Intake', route: '/food-intake', icon: 'intake' },
-    { label: 'Food Facts',  route: '/food-facts',  icon: 'facts'  },
-  ];
 }
