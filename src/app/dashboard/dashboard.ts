@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { NgFor, NgIf, NgClass } from '@angular/common';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Supabase } from '../services/supabase';
 import { AuthService } from '../services/auth';
 import { GeminiService } from '../services/gemini';
@@ -15,7 +16,7 @@ interface DailyTotal {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass],
+  imports: [DatePipe, DecimalPipe, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

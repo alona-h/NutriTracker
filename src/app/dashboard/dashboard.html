@@ -1,36 +1,113 @@
-<div class="page-header">
-  <h1 class="page-title">Dashboard</h1>
-  <p class="page-subtitle">Your intake history over the last year.</p>
-</div>
-
-<div class="content-area" *ngIf="!loading()">
-  <!-- Fiber Heatmap -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-header-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-      </div>
-      <div>
-        <h2 class="card-title">Fiber Intake (Last 365 Days)</h2>
-        <p class="card-desc">Max target: {{ MAX_FIBER }}g</p>
-      </div>
+<div class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">{{ today | date:'EEEE · MMMM d, y' }}</div>
+      <h1 class="page-title">Daily Summary</h1>
+      <p class="page-sub">Your nutrition at a glance.</p>
     </div>
-    <div class="heatmap-container">
-      <div class="heatmap-labels-y">
-        <div class="heatmap-label-y" *ngFor="let label of dayLabels; let i = index">
-          <span *ngIf="i % 2 !== 0">{{ label }}</span>
-        </div>
+    <a routerLink="/log" class="btn btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Add Entry
+    </a>
+  </div>
+
+  <div class="content">
+    @if (loading()) {
+      <div class="empty-state">Loading...</div>
+    } @else {
+
+      <!-- Date strip -->
+      <div class="date-strip">
+        @for (d of dateStrip(); track d) {
+          <button
+            class="date-chip"
+            [class.date-chip-active]="selectedDate() === d"
+            (click)="selectedDate.set(d)"
+            type="button"
+          >
+            <span class="date-chip-weekday">{{ dayLabel(d) }}</span>
+            <span class="date-chip-day">{{ d | date:'d' }}</span>
+          </button>
+        }
       </div>
-      <div class="heatmap-grid-scroll">
-        <div class="heatmap-grid">
-          <div class="heatmap-week" *ngFor="let week of fiberWeeks()">
-            <div class="heatmap-day" *ngFor="let day of week.days"
-              [ngClass]="day ? (day.level > 0 ? 'level-fiber-' + day.level : 'empty') : ''"
-              [class.hidden]="day === null" [title]="day ? day.dateStr + ': ' + day.value + 'g' : ''">
+
+      <!-- Goal rings + AI Coach -->
+      <div class="summary-hero">
+
+        <!-- Goal rings card -->
+        <div class="card card-pad rings-card">
+          <div class="rings-card-heading">Today's Targets</div>
+          <div class="rings-row">
+
+            <!-- Calories ring -->
+            <div class="ring-wrap">
+              <div class="ring-svg-wrap">
+                <svg class="ring-svg" viewBox="0 0 200 200">
+                  <circle class="ring-track" cx="100" cy="100" r="88"/>
+                  <circle
+                    class="ring-fill ring-fill-amber"
+                    cx="100" cy="100" r="88"
+                    [attr.stroke-dasharray]="circumference"
+                    [attr.stroke-dashoffset]="ringOffset(ringPct(selectedTotals().calories, userProfile().targetCalories))"
+                  />
+                </svg>
+                <div class="ring-label">
+                  <span class="ring-value">{{ selectedTotals().calories | number:'1.0-0' }}</span>
+                  <span class="ring-unit">kcal</span>
+                  <span class="ring-pct">{{ ringPct(selectedTotals().calories, userProfile().targetCalories) }}%</span>
+                </div>
+              </div>
+              <div class="ring-name ring-name-amber">Calories</div>
             </div>
+
+            <!-- Protein ring -->
+            <div class="ring-wrap">
+              <div class="ring-svg-wrap">
+                <svg class="ring-svg" viewBox="0 0 200 200">
+                  <circle class="ring-track" cx="100" cy="100" r="88"/>
+                  <circle
+                    class="ring-fill ring-fill-plum"
+                    cx="100" cy="100" r="88"
+                    [attr.stroke-dasharray]="circumference"
+                    [attr.stroke-dashoffset]="ringOffset(ringPct(selectedTotals().protein, userProfile().targetProtein))"
+                  />
+                </svg>
+                <div class="ring-label">
+                  <span class="ring-value">{{ selectedTotals().protein | number:'1.0-1' }}</span>
+                  <span class="ring-unit">g</span>
+                  <span class="ring-pct">{{ ringPct(selectedTotals().protein, userProfile().targetProtein) }}%</span>
+                </div>
+              </div>
+              <div class="ring-name ring-name-plum">Protein</div>
+            </div>
+
+            <!-- Fiber ring -->
+            <div class="ring-wrap">
+              <div class="ring-svg-wrap">
+                <svg class="ring-svg" viewBox="0 0 200 200">
+                  <circle class="ring-track" cx="100" cy="100" r="88"/>
+                  <circle
+                    class="ring-fill ring-fill-green"
+                    cx="100" cy="100" r="88"
+                    [attr.stroke-dasharray]="circumference"
+                    [attr.stroke-dashoffset]="ringOffset(ringPct(selectedTotals().fiber, userProfile().targetFiber))"
+                  />
+                </svg>
+                <div class="ring-label">
+                  <span class="ring-value">{{ selectedTotals().fiber | number:'1.0-1' }}</span>
+                  <span class="ring-unit">g</span>
+                  <span class="ring-pct">{{ ringPct(selectedTotals().fiber, userProfile().targetFiber) }}%</span>
+                </div>
+              </div>
+              <div class="ring-name ring-name-green">Fiber</div>
+            </div>
+
+          </div>
+
+          <div class="rings-targets">
+            Targets: {{ userProfile().targetCalories }} kcal · {{ userProfile().targetProtein }}g protein · {{ userProfile().targetFiber }}g fiber
           </div>
         </div>
 
@@ -57,43 +134,114 @@
         </div>
 
       </div>
-    </div>
-  </div>
 
-  <!-- Calories Heatmap -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-header-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      </div>
-      <div>
-        <h2 class="card-title">Calories Intake (Last 365 Days)</h2>
-        <p class="card-desc">Max target: {{ MAX_CALORIES }} kcal</p>
-      </div>
-    </div>
-    <div class="heatmap-container">
-      <div class="heatmap-labels-y">
-        <div class="heatmap-label-y" *ngFor="let label of dayLabels; let i = index">
-          <span *ngIf="i % 2 !== 0">{{ label }}</span>
-        </div>
-      </div>
-      <div class="heatmap-grid-scroll">
-        <div class="heatmap-grid">
-          <div class="heatmap-week" *ngFor="let week of calorieWeeks()">
-            <div class="heatmap-day" *ngFor="let day of week.days"
-              [ngClass]="day ? (day.level > 0 ? 'level-calorie-' + day.level : 'empty') : ''"
-              [class.hidden]="day === null" [title]="day ? day.dateStr + ': ' + day.value + ' kcal' : ''">
-            </div>
+      <!-- 7-day trend -->
+      <div class="card card-pad">
+        <div class="trend-chart-header">
+          <h2 class="card-title">7-Day Trend</h2>
+          <div class="trend-legend">
+            <span class="trend-legend-dot trend-legend-dot-amber"></span><span class="trend-legend-text">Calories</span>
+            <span class="trend-legend-dot trend-legend-dot-plum"></span><span class="trend-legend-text">Protein</span>
+            <span class="trend-legend-dot trend-legend-dot-green"></span><span class="trend-legend-text">Fiber</span>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class="content-area empty-state" *ngIf="loading()">
-  <p>Loading dashboard...</p>
+        <div class="trend-bars-zone">
+          <div class="trend-target-line" [style.bottom.%]="trendTargetLinePct()"></div>
+
+          @for (day of weekTotals(); track day.date) {
+            <div class="trend-col-wrap">
+              <div class="trend-tooltip">
+                <div class="trend-tooltip-title">{{ dayLabel(day.date) }}</div>
+                <div class="trend-tooltip-row">
+                  <span class="trend-tooltip-dot trend-tooltip-dot-amber"></span>
+                  <span class="trend-tooltip-label">Cal</span>
+                  <span class="trend-tooltip-val">{{ day.calories | number:'1.0-0' }} kcal</span>
+                  <span class="trend-tooltip-pct">{{ trendPct(day.calories, userProfile().targetCalories) }}%</span>
+                </div>
+                <div class="trend-tooltip-row">
+                  <span class="trend-tooltip-dot trend-tooltip-dot-plum"></span>
+                  <span class="trend-tooltip-label">Protein</span>
+                  <span class="trend-tooltip-val">{{ day.protein | number:'1.0-1' }}g</span>
+                  <span class="trend-tooltip-pct">{{ trendPct(day.protein, userProfile().targetProtein) }}%</span>
+                </div>
+                <div class="trend-tooltip-row">
+                  <span class="trend-tooltip-dot trend-tooltip-dot-green"></span>
+                  <span class="trend-tooltip-label">Fiber</span>
+                  <span class="trend-tooltip-val">{{ day.fiber | number:'1.0-1' }}g</span>
+                  <span class="trend-tooltip-pct">{{ trendPct(day.fiber, userProfile().targetFiber) }}%</span>
+                </div>
+              </div>
+              <div class="trend-col-bars">
+                <div class="trend-bar trend-bar-amber"
+                     [style.height.%]="trendBarPct(day.calories, userProfile().targetCalories)"></div>
+                <div class="trend-bar trend-bar-plum"
+                     [style.height.%]="trendBarPct(day.protein, userProfile().targetProtein)"></div>
+                <div class="trend-bar trend-bar-green"
+                     [style.height.%]="trendBarPct(day.fiber, userProfile().targetFiber)"></div>
+              </div>
+              <span class="trend-day-label">{{ dayLabel(day.date) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Selected day entries -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+              <path d="M7 2v20"/>
+              <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+            </svg>
+          </div>
+          <div>
+            <p class="card-title">
+              {{ selectedDate() === today ? "Today's Entries" : (selectedDate() | date:'MMM d') + " Entries" }}
+            </p>
+            <p class="card-desc">{{ selectedDateIntakes().length }} entr{{ selectedDateIntakes().length === 1 ? 'y' : 'ies' }}</p>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Food</th>
+                <th>Portion</th>
+                <th>Calories</th>
+                <th>Protein</th>
+                <th>Fiber</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (intake of selectedDateIntakes(); track intake.id) {
+                <tr>
+                  <td class="entry-name">{{ intake.food.name }}</td>
+                  <td>{{ intake.intakeSize }} {{ intake.food.unitOfMeasurement }}</td>
+                  <td><span class="chip chip-amber">{{ intake.calorieIntake | number:'1.0-0' }} kcal</span></td>
+                  <td><span class="chip chip-plum">{{ intake.proteinIntake | number:'1.0-1' }}g</span></td>
+                  <td><span class="chip chip-green">{{ intake.fiberIntake | number:'1.1-1' }}g</span></td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5">
+                    <div class="empty-state">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/>
+                        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+                      </svg>
+                      No entries for this day.
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    }
+  </div>
 </div>

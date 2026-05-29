@@ -1,23 +1,167 @@
-.heatmap-container {
+/* ── Date strip ────────────────────────────────────────────── */
+.date-strip {
   display: flex;
   gap: 8px;
-  padding: 20px 24px;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
 
-.heatmap-labels-y {
+.date-chip {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding-top: 0px; /* Aligns with grid */
-  color: var(--text-muted);
-  font-size: 10px;
-  line-height: 12px;
-  text-align: right;
-  min-width: 24px;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
 }
 
-.heatmap-label-y {
-  height: 12px;
+.date-chip:hover { border-color: var(--brand-400); }
+
+.date-chip-active {
+  border-color: var(--brand-500);
+  background: var(--brand-50);
+}
+
+.date-chip-weekday {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ink-400);
+}
+
+.date-chip-active .date-chip-weekday,
+.date-chip-active .date-chip-day { color: var(--brand-600); }
+
+.date-chip-day {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--ink-800);
+  line-height: 1;
+}
+
+/* ── Summary hero ──────────────────────────────────────────── */
+.summary-hero {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.rings-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rings-card-heading {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+}
+
+.rings-row {
+  display: flex;
+  gap: 16px;
+  justify-content: space-around;
+}
+
+.ring-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.ring-svg-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 140px;
+}
+
+.ring-svg {
+  width: 100%;
+  height: auto;
+  transform: rotate(-90deg);
+}
+
+.ring-track {
+  fill: none;
+  stroke: var(--surface-3);
+  stroke-width: 14;
+}
+
+.ring-fill {
+  fill: none;
+  stroke-width: 14;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1);
+}
+
+.ring-fill-amber { stroke: var(--amber-500); }
+.ring-fill-plum  { stroke: var(--plum-500); }
+.ring-fill-green { stroke: var(--green-500); }
+
+.ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.ring-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--ink-900);
+  line-height: 1;
+}
+
+.ring-unit {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ink-500);
+}
+
+.ring-pct {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-400);
+}
+
+.ring-name { font-size: 12.5px; font-weight: 700; }
+.ring-name-amber { color: var(--amber-600); }
+.ring-name-plum  { color: var(--plum-500); }
+.ring-name-green { color: var(--green-500); }
+
+.rings-targets {
+  font-size: 12px;
+  color: var(--ink-400);
+  text-align: center;
+}
+
+/* ── AI Coach card ─────────────────────────────────────────── */
+.ai-coach-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-coach-head {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -49,76 +193,172 @@
   flex: 1;
 }
 
-.ai-coach-btn {
-  align-self: flex-start;
-}
+.ai-coach-btn { align-self: flex-start; }
 
 .ai-coach-loading {
   opacity: 0.5;
   font-style: italic;
 }
 
-/* ── 7-day trend — combined grouped chart ─────────────────── */
+/* ── 7-day trend ───────────────────────────────────────────── */
 .trend-chart-header {
   display: flex;
-  gap: 3px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
 }
 
-.heatmap-week {
+.trend-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.trend-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.trend-legend-dot-amber { background: var(--amber-500); }
+.trend-legend-dot-plum  { background: var(--plum-500); }
+.trend-legend-dot-green { background: var(--green-500); }
+
+.trend-legend-text {
+  font-size: 11px;
+  color: var(--ink-500);
+  margin-right: 4px;
+}
+
+.trend-bars-zone {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 80px;
+  overflow: visible;
+}
+
+.trend-target-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1.5px dashed var(--ink-300);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.trend-col-wrap {
+  flex: 1;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
 }
 
-.heatmap-day {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  transition: transform 0.1s ease;
+.trend-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1c1c1e;
+  color: #f5f5f7;
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-width: 160px;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
 }
 
-.heatmap-day:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 0 1px var(--text-primary);
+.trend-col-wrap:hover .trend-tooltip { opacity: 1; }
+
+.trend-tooltip-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: rgba(245,245,247,0.55);
+  margin-bottom: 5px;
 }
 
-.heatmap-day.hidden {
-  visibility: hidden;
+.trend-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 2px;
 }
 
-/* Base level 0 (empty) */
-.heatmap-day.empty {
-  background: #e2e8f0; /* darker light gray for better contrast */
-  border: 1px solid #cbd5e1;
+.trend-tooltip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-/* Fiber Scale (Green) */
-.level-fiber-1 { background: rgba(16, 185, 129, 0.3); border: 1px solid rgba(16, 185, 129, 0.1); }
-.level-fiber-2 { background: rgba(16, 185, 129, 0.6); border: 1px solid rgba(16, 185, 129, 0.2); }
-.level-fiber-3 { background: #10b981; border: 1px solid #059669; }
-.level-fiber-4 { background: #059669; border: 1px solid #047857; }
+.trend-tooltip-dot-amber { background: var(--amber-500); }
+.trend-tooltip-dot-plum  { background: var(--plum-500); }
+.trend-tooltip-dot-green { background: var(--green-500); }
 
-/* Calorie Scale (Amber) */
-.level-calorie-1 { background: rgba(245, 158, 11, 0.3); border: 1px solid rgba(245, 158, 11, 0.1); }
-.level-calorie-2 { background: rgba(245, 158, 11, 0.6); border: 1px solid rgba(245, 158, 11, 0.2); }
-.level-calorie-3 { background: #f59e0b; border: 1px solid #d97706; }
-.level-calorie-4 { background: #d97706; border: 1px solid #b45309; }
+.trend-tooltip-label { flex: 1; color: rgba(255,255,255,0.75); }
+.trend-tooltip-val   { font-weight: 600; color: #fff; }
+.trend-tooltip-pct   { font-size: 10px; color: rgba(255,255,255,0.5); margin-left: 4px; }
 
-/* Dark mode overrides */
-.dark .heatmap-day.empty { background: #1f2937; border: 1px solid #374151; }
+.trend-col-bars {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  justify-content: center;
+}
 
-.dark .level-fiber-1 { background: rgba(16, 185, 129, 0.25); border: 1px solid rgba(16, 185, 129, 0.1); }
-.dark .level-fiber-2 { background: rgba(16, 185, 129, 0.5); border: 1px solid rgba(16, 185, 129, 0.2); }
-.dark .level-fiber-3 { background: #10b981; border: 1px solid rgba(0, 0, 0, 0.2); }
-.dark .level-fiber-4 { background: #059669; border: 1px solid rgba(0, 0, 0, 0.2); }
+.trend-bar {
+  flex: 1;
+  max-width: 10px;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.45s cubic-bezier(.4,0,.2,1);
+}
 
-.dark .level-calorie-1 { background: rgba(245, 158, 11, 0.25); border: 1px solid rgba(245, 158, 11, 0.1); }
-.dark .level-calorie-2 { background: rgba(245, 158, 11, 0.5); border: 1px solid rgba(245, 158, 11, 0.2); }
-.dark .level-calorie-3 { background: #f59e0b; border: 1px solid rgba(0, 0, 0, 0.2); }
-.dark .level-calorie-4 { background: #d97706; border: 1px solid rgba(0, 0, 0, 0.2); }
+.trend-bar-amber { background: var(--amber-500); }
+.trend-bar-plum  { background: var(--plum-500); }
+.trend-bar-green { background: var(--green-500); }
 
-@media (max-width: 768px) {
-  .heatmap-container { padding: 16px; }
-  .heatmap-day { width: 10px; height: 10px; }
-  .heatmap-label-y { height: 10px; font-size: 9px; line-height: 10px; }
+.trend-day-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-400);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+/* ── Entry table ───────────────────────────────────────────── */
+.entry-name {
+  font-weight: 500;
+  color: var(--ink-900);
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .summary-hero { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .rings-row     { gap: 6px; }
+  .ring-svg-wrap { max-width: 110px; }
+  .ring-value    { font-size: 16px; }
+  .ring-unit     { font-size: 9px; }
+  .ring-pct      { font-size: 9px; }
 }
