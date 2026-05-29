@@ -20,16 +20,46 @@
   height: 12px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  gap: 8px;
 }
 
-.heatmap-grid-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 8px; /* Room for scrollbar */
+.ai-coach-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--brand-100);
+  color: var(--brand-600);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
 }
 
-.heatmap-grid {
+.ai-coach-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-800);
+}
+
+.ai-coach-message {
+  font-size: 13.5px;
+  color: var(--ink-600);
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+.ai-coach-btn {
+  align-self: flex-start;
+}
+
+.ai-coach-loading {
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* ── 7-day trend — combined grouped chart ─────────────────── */
+.trend-chart-header {
   display: flex;
   gap: 3px;
 }
