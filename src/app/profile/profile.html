@@ -4,20 +4,25 @@
       <h1 class="page-title">Profile &amp; Goals</h1>
       <p class="page-sub">Personalize your targets and appearance.</p>
     </div>
-    <button
-      class="btn btn-primary"
-      type="button"
-      [disabled]="saving()"
-      (click)="save()"
-    >
-      @if (saving()) {
-        Saving…
-      } @else if (saved()) {
-        Saved!
-      } @else {
-        Save changes
+    <div class="profile-header-right">
+      @if (saveError()) {
+        <span class="profile-save-error">{{ saveError() }}</span>
       }
-    </button>
+      <button
+        class="btn btn-primary"
+        type="button"
+        [disabled]="saving()"
+        (click)="save()"
+      >
+        @if (saving()) {
+          Saving…
+        } @else if (saved()) {
+          Saved!
+        } @else {
+          Save changes
+        }
+      </button>
+    </div>
   </div>
 
   <div class="content profile-content">

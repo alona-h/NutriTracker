@@ -17,6 +17,7 @@ export class ProfileComponent implements OnInit {
 
   saving    = signal(false);
   saved     = signal(false);
+  saveError = signal<string | null>(null);
   aiEnabled = this.auth.aiEnabled;
 
   toggleAi(): void {
@@ -62,23 +63,29 @@ export class ProfileComponent implements OnInit {
     if (this.form.invalid) return;
     this.saving.set(true);
     this.saved.set(false);
+    this.saveError.set(null);
 
-    const v = this.form.value;
-    await this.supabase.upsertNutritionProfile({
-      name:           v.name || undefined,
-      age:            v.age ?? undefined,
-      sex:            (v.sex as UserProfile['sex']) ?? undefined,
-      heightCm:       v.heightCm ?? undefined,
-      weightKg:       v.weightKg ?? undefined,
-      activityLevel:  (v.activityLevel as UserProfile['activityLevel']) ?? undefined,
-      targetCalories: v.targetCalories!,
-      targetProtein:  v.targetProtein!,
-      targetFiber:    v.targetFiber!,
-    });
-
-    await this.auth.refreshProfile();
-    this.saving.set(false);
-    this.saved.set(true);
-    setTimeout(() => this.saved.set(false), 3000);
+    try {
+      const v = this.form.value;
+      await this.supabase.upsertNutritionProfile({
+        name:           v.name || undefined,
+        age:            v.age ?? undefined,
+        sex:            (v.sex as UserProfile['sex']) ?? undefined,
+        heightCm:       v.heightCm ?? undefined,
+        weightKg:       v.weightKg ?? undefined,
+        activityLevel:  (v.activityLevel as UserProfile['activityLevel']) ?? undefined,
+        targetCalories: v.targetCalories!,
+        targetProtein:  v.targetProtein!,
+        targetFiber:    v.targetFiber!,
+      });
+      await this.auth.refreshProfile();
+      this.saved.set(true);
+      setTimeout(() => this.saved.set(false), 3000);
+    } catch (err: unknown) {
+      const msg = (err as { message?: string }).message ?? 'Could not save profile. Please try again.';
+      this.saveError.set(msg);
+    } finally {
+      this.saving.set(false);
+    }
   }
 }

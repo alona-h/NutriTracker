@@ -59,36 +59,36 @@ export class Supabase {
       name:           data['name'],
       age:            data['age'],
       sex:            data['sex'],
-      heightCm:       data['heightCm'],
-      weightKg:       data['weightKg'],
-      activityLevel:  data['activityLevel'],
-      targetCalories: data['targetCalories'] ?? 2000,
-      targetProtein:  data['targetProtein']  ?? 50,
-      targetFiber:    data['targetFiber']    ?? 25,
+      heightCm:       data['heightcm'],
+      weightKg:       data['weightkg'],
+      activityLevel:  data['activitylevel'],
+      targetCalories: data['targetcalories'] ?? 2000,
+      targetProtein:  data['targetprotein']  ?? 50,
+      targetFiber:    data['targetfiber']    ?? 25,
     } as UserProfile;
   }
 
   async upsertNutritionProfile(profile: Partial<UserProfile>): Promise<void> {
     const { data: sessionData } = await this.supabase.auth.getSession();
     const authId = sessionData.session?.user?.id;
-    if (!authId) return;
+    if (!authId) throw new Error('Not authenticated');
 
     const { error } = await this.supabase
       .from('UserProfile')
       .upsert({
-        auth_user_id:  authId,
-        name:          profile.name,
-        age:           profile.age,
-        sex:           profile.sex,
-        heightCm:      profile.heightCm,
-        weightKg:      profile.weightKg,
-        activityLevel: profile.activityLevel,
-        targetCalories: profile.targetCalories,
-        targetProtein:  profile.targetProtein,
-        targetFiber:    profile.targetFiber,
+        auth_user_id:    authId,
+        name:            profile.name,
+        age:             profile.age,
+        sex:             profile.sex,
+        heightcm:        profile.heightCm,
+        weightkg:        profile.weightKg,
+        activitylevel:   profile.activityLevel,
+        targetcalories:  profile.targetCalories,
+        targetprotein:   profile.targetProtein,
+        targetfiber:     profile.targetFiber,
       }, { onConflict: 'auth_user_id' });
 
-    if (error) console.error('Error upserting nutrition profile:', error);
+    if (error) throw error;
   }
 
   // ── Food Facts ─────────────────────────────────────────────

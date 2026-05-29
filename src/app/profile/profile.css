@@ -1,3 +1,17 @@
+.profile-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-save-error {
+  font-size: 13px;
+  color: var(--danger);
+  max-width: 260px;
+  text-align: right;
+  line-height: 1.4;
+}
+
 .profile-content {
   display: flex;
   flex-direction: column;
