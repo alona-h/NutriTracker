@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Supabase } from '../services/supabase';
-import { GeminiService } from '../services/gemini';
+import { AiService } from '../services/ai';
 import { AuthService } from '../services/auth';
 
 @Component({
@@ -14,7 +14,7 @@ import { AuthService } from '../services/auth';
 export class FoodDatabaseComponent implements OnInit {
   private fb       = inject(FormBuilder);
   private supabase = inject(Supabase);
-  private gemini   = inject(GeminiService);
+  private ai = inject(AiService);
 
   foodFacts  = signal<FoodItem[]>([]);
   showModal  = signal(false);
@@ -95,7 +95,7 @@ export class FoodDatabaseComponent implements OnInit {
     controls.forEach(c => this.foodForm.get(c)?.disable());
 
     try {
-      const data = await this.gemini.autofillFood(name);
+      const data = await this.ai.autofillFood(name);
 
       this.foodForm.patchValue({
         servingSize:       data.servingSize,

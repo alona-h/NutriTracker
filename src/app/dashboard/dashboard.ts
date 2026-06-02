@@ -3,7 +3,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Supabase } from '../services/supabase';
 import { AuthService } from '../services/auth';
-import { GeminiService } from '../services/gemini';
+import { AiService } from '../services/ai';
 import { Utils } from '../utils/utils';
 
 interface DailyTotal {
@@ -23,7 +23,7 @@ interface DailyTotal {
 export class DashboardComponent implements OnInit {
   private supabase = inject(Supabase);
   private auth     = inject(AuthService);
-  private gemini   = inject(GeminiService);
+  private ai = inject(AiService);
 
   aiEnabled = this.auth.aiEnabled;
 
@@ -147,7 +147,7 @@ export class DashboardComponent implements OnInit {
         fiber:    i.fiberIntake    ?? 0,
       }));
 
-    this.gemini.getInsights({
+    this.ai.getInsights({
       profile: {
         targetCalories: profile.targetCalories,
         targetProtein:  profile.targetProtein,

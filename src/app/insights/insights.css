@@ -16,7 +16,7 @@
 
 /* ── Hero card ───────────────────────────────────────────────── */
 .insights-hero {
-  padding: 28px 24px 24px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -79,7 +79,7 @@
 }
 
 .insights-macro-card {
-  padding: 14px 16px;
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -204,7 +204,7 @@
   color: var(--ink-600);
   margin: 0;
   line-height: 1.55;
-  padding: 0 18px;
+  padding: 0 18px 18px;
 }
 
 /* ── Streak dots ─────────────────────────────────────────────── */

@@ -2,7 +2,7 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Supabase } from '../services/supabase';
 import { AuthService } from '../services/auth';
-import { GeminiService, InsightResponse, InsightsRequest } from '../services/gemini';
+import { AiService, InsightResponse, InsightsRequest } from '../services/ai';
 
 interface ChatEntry {
   q: string;
@@ -19,7 +19,7 @@ interface ChatEntry {
 export class InsightsComponent implements OnInit {
   private supabase = inject(Supabase);
   private auth     = inject(AuthService);
-  private gemini   = inject(GeminiService);
+  private ai = inject(AiService);
 
   aiEnabled = this.auth.aiEnabled;
 
@@ -42,7 +42,7 @@ export class InsightsComponent implements OnInit {
 
     try {
       const payload = await this.buildPayload();
-      const data    = await this.gemini.getInsights(payload);
+      const data    = await this.ai.getInsights(payload);
       this.insight.set(data);
     } catch (err: unknown) {
       const apiMsg = (err as { response?: { data?: { error?: string } } }).response?.data?.error;
@@ -60,7 +60,7 @@ export class InsightsComponent implements OnInit {
 
     try {
       const payload = await this.buildPayload(question);
-      const data    = await this.gemini.getInsights(payload);
+      const data    = await this.ai.getInsights(payload);
       this.chatHistory.update(h => [...h, { q: question, a: data.answer ?? '' }]);
       this.questionInput.set('');
     } catch {
