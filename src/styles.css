@@ -1083,6 +1083,30 @@ html, body {
   flex-shrink: 0;
 }
 
+.auth-switch {
+  font-size: 13.5px;
+  color: var(--ink-500);
+  text-align: center;
+  margin: 0;
+}
+
+.auth-switch-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--brand-600);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.auth-switch-link:hover {
+  color: var(--brand-700);
+}
+
 /* ── Mobile — bottom tab bar ───────────────────────────────────── */
 .mobile-tabbar {
   display: none;

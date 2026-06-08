@@ -14,6 +14,7 @@ export class AuthService {
   currentUser    = signal<AppUser | null>(null);
   userProfile    = signal<UserProfile>(DEFAULT_PROFILE);
   aiEnabled      = signal<boolean>(this.readAiEnabled());
+  hasSession     = signal(false);
 
   private readAiEnabled(): boolean {
     try { return localStorage.getItem('ai_enabled') !== 'false'; } catch { return true; }
@@ -26,12 +27,14 @@ export class AuthService {
 
   init(): void {
     this.supabaseService.authClient.getSession().then(({ data }) => {
+      this.hasSession.set(!!data.session);
       if (data.session) {
         this.loadUserData();
       }
     });
 
     this.supabaseService.authClient.onAuthStateChange((_, session) => {
+      this.hasSession.set(!!session);
       if (session) {
         this.loadUserData();
       } else {
@@ -59,9 +62,14 @@ export class AuthService {
     await this.supabaseService.signOut();
     this.currentUser.set(null);
     this.userProfile.set(DEFAULT_PROFILE);
+    this.hasSession.set(false);
   }
 
   isAuthenticated(): boolean {
-    return this.currentUser() !== null;
+    return this.hasSession();
+  }
+
+  async refreshCurrentUser(): Promise<void> {
+    await this.loadUserData();
   }
 }

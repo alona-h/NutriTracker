@@ -1,0 +1,119 @@
+<div class="auth-page">
+  <!-- Radial glow backdrop -->
+  <div class="auth-glow auth-glow-1"></div>
+  <div class="auth-glow auth-glow-2"></div>
+  <div class="auth-glow auth-glow-3"></div>
+
+  <!-- Top bar -->
+  <div class="auth-topbar">
+    <div class="auth-brand-row">
+      <div class="auth-brand-mark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+      </div>
+      <span class="auth-brand-name">NutriTracker</span>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="auth-card">
+
+    @if (success()) {
+      <div>
+        <div class="auth-eyebrow">Almost there</div>
+        <h1 class="auth-heading">Check your inbox</h1>
+      </div>
+      <p class="auth-success-msg">
+        We sent a confirmation link to your email address. Click it to activate your account, then log in.
+      </p>
+      <button type="button" class="auth-submit" (click)="switchToLogin.emit()">
+        Back to log in
+      </button>
+    } @else {
+      <div>
+        <div class="auth-eyebrow">Get started</div>
+        <h1 class="auth-heading">Create your account</h1>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+
+        <div class="auth-field">
+          <label for="name">Name</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Your name"
+            autocomplete="name"
+            class="auth-input"
+          />
+        </div>
+
+        <div class="auth-field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            class="auth-input"
+            [class.auth-input--error]="error()"
+          />
+        </div>
+
+        <div class="auth-field">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Min. 6 characters"
+            autocomplete="new-password"
+            class="auth-input"
+          />
+        </div>
+
+        <div class="auth-field auth-field-password">
+          <label for="confirmPassword">Confirm password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="••••••••"
+            autocomplete="new-password"
+            class="auth-input"
+            [class.auth-input--error]="passwordMismatch"
+          />
+          @if (passwordMismatch) {
+            <p class="auth-error">Passwords do not match.</p>
+          }
+          @if (error()) {
+            <p class="auth-error">{{ error() }}</p>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="auth-submit"
+          [disabled]="form.invalid || isLoading()"
+        >
+          @if (isLoading()) {
+            <span class="auth-spinner"></span>
+            Creating account...
+          } @else {
+            Create account
+          }
+        </button>
+
+      </form>
+
+      <p class="auth-switch">
+        Already have an account?
+        <button type="button" class="auth-switch-link" (click)="switchToLogin.emit()">Log in</button>
+      </p>
+    }
+  </div>
+</div>

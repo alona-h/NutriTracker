@@ -1,10 +1,27 @@
-const fs = require('fs');
+const fs   = require('fs');
 const path = require('path');
+
+const envFiles = ['.env.local', '.env'];
+for (const file of envFiles) {
+  const p = path.join(__dirname, '..', file);
+  if (fs.existsSync(p)) {
+    require('dotenv').config({ path: p });
+    break;
+  }
+}
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('ERROR: SUPABASE_URL and SUPABASE_ANON_KEY must be set (in .env.local, .env, or the shell environment).');
+  process.exit(1);
+}
 
 const content = `export const environment = {
   production: true,
-  supabaseUrl: '${process.env.SUPABASE_URL}',
-  supabaseKey: '${process.env.SUPABASE_ANON_KEY}',
+  supabaseUrl: '${supabaseUrl}',
+  supabaseKey: '${supabaseKey}',
 };
 `;
 

@@ -1,13 +1,14 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { SidebarComponent } from './sidebar/sidebar';
 import { LoginComponent } from './login/login';
+import { RegisterComponent } from './register/register';
 import { AuthService } from './services/auth';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, SidebarComponent, LoginComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, SidebarComponent, LoginComponent, RegisterComponent],
   templateUrl: './app.html',
 })
 export class App implements OnInit {
@@ -15,6 +16,7 @@ export class App implements OnInit {
 
   isNight = false;
   sidebarOpen = false;
+  authView = signal<'login' | 'register'>('login');
 
   isAuthenticated = computed(() => this.auth.isAuthenticated());
 

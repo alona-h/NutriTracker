@@ -81,6 +81,8 @@
     </nav>
 
   </div>
+} @else if (authView() === 'register') {
+  <app-register (switchToLogin)="authView.set('login')" />
 } @else {
-  <app-login />
+  <app-login (switchToRegister)="authView.set('register')" />
 }

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Supabase } from '../services/supabase';
 
@@ -12,6 +12,8 @@ import { Supabase } from '../services/supabase';
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private supabase = inject(Supabase);
+
+  switchToRegister = output<void>();
 
   form = this.fb.group({
     email:    ['', [Validators.required, Validators.email]],

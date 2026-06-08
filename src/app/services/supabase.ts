@@ -16,8 +16,19 @@ export class Supabase {
     return this.supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
   }
 
+  async signUp(email: string, password: string) {
+    return this.supabase.auth.signUp({ email: email.trim().toLowerCase(), password });
+  }
+
   async signOut() {
     return this.supabase.auth.signOut();
+  }
+
+  async createAppUser(name: string, authId: string): Promise<void> {
+    const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 12);
+    const code = slug + '_' + Math.random().toString(36).slice(2, 7);
+    const { error } = await this.supabase.from('User').insert([{ auth_user_id: authId, name, code }]);
+    if (error) throw error;
   }
 
   get authClient() {

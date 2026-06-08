@@ -1,0 +1,14 @@
+.auth-field {
+  margin-bottom: 14px;
+}
+
+.auth-field-password {
+  margin-bottom: 20px;
+}
+
+.auth-success-msg {
+  font-size: 14px;
+  color: var(--ink-600);
+  line-height: 1.6;
+  margin: 0;
+}
