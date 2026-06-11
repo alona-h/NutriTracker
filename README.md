@@ -1,98 +1,135 @@
 # NutriTracker
 
-A personal nutrition tracking PWA built with Angular and Supabase. Log meals, monitor macros against daily targets, and review trends over time.
+NutriTracker is a personal nutrition tracking app built with Angular and Supabase. You log your meals, track your daily macros against your own targets, review how the week is trending, and ask an AI assistant for coaching along the way.
 
 ---
 
 ## Features
 
 ### Daily Summary
-- Goal rings showing today's progress toward calorie, protein, and fiber targets
-- 7-day grouped bar chart with calories, protein, and fiber per day — bars are normalized to a shared scale with a target-line overlay; hover tooltips show exact values and % of goal
-- Date strip to browse any of the last 7 days and see that day's macro totals and logged entries
+- Goal rings show today's progress toward your calorie, protein, and fiber targets.
+- A 7-day bar chart plots calories, protein, and fiber per day on a shared scale, with a target line and tooltips that show exact values and percent of goal.
+- A date strip lets you browse any of the last 7 days and see that day's totals and entries.
 
 ### Nutrition Log
-- Log food entries by selecting a food from the database and entering a portion size
-- Edit or delete any logged entry through a modal
-- Date picker to log or review entries for any past date
-- Per-date totals strip with progress bars for calories, protein, and fiber
+- Log a food by picking it from your database and entering a portion size.
+- Edit or delete any logged entry from a modal.
+- Pick a date to log or review entries for any past day.
+- A totals strip shows progress bars for calories, protein, and fiber on the selected date.
 
 ### Food Database
-- Personal library of foods with name, serving size, unit of measurement, calories, protein, and fiber per serving
-- Add, edit, and delete foods via a modal form
-- Live search to filter foods by name
+- Keep a personal library of foods with serving size, unit, calories, protein, and fiber.
+- Add, edit, and delete foods from a modal form.
+- Search by name to filter the list as you type.
+- Use AI autofill to estimate a food's nutrition from its name, then adjust the values before saving.
 
-### Profile & Goals
-- Set personal daily targets for calories, protein, and fiber, used across all progress bars and goal rings
-- Optional personal attributes: name, age, sex, height, weight, and activity level
+### AI Insights
+- Get an analysis of your profile, today's intake, and the last 7 days of totals.
+- See per-macro status with percent of target, the gap left to close, and an on-track or over-target label.
+- Receive three meal suggestions aimed at your biggest macro gap.
+- Read "what's working" and "watch" notes, including a 7-day fiber consistency strip.
+- Ask free-form questions in chat and get answers grounded in your own data.
 
-### Authentication
-- Email and password login via Supabase Auth
-- Session persisted across page loads; protected routes redirect unauthenticated users to login
+### Profile and Goals
+- Set your daily targets for calories, protein, and fiber, used everywhere progress is shown.
+- Add optional details like name, age, sex, height, weight, and activity level.
+- Turn AI features on or off whenever you want.
+
+### Accounts
+- Register with your name, email, and password, with email confirmation when required.
+- Log in with email and password through Supabase Auth.
+- Stay signed in across page loads, with the app gated behind authentication.
 
 ### App Shell
-- Collapsible sidebar navigation on desktop; bottom tab bar on mobile
-- Light / Night mode toggle — persisted in `localStorage`; native browser widgets (date pickers, number inputs) adopt dark styling automatically in Night mode
+- Navigate with a collapsible sidebar on desktop and a bottom tab bar on mobile.
+- Switch between light and night mode, with your choice remembered between visits.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Angular 21 (standalone components, signals) |
-| Backend / Auth | Supabase (PostgreSQL + Auth) |
-| Styling | CSS custom properties (design token system) |
-| Fonts | Plus Jakarta Sans, Sora (Google Fonts) |
-| Forms | Angular Reactive Forms |
-| Routing | Angular Router |
-| PWA | Web App Manifest + app icons |
-| SSR | Angular SSR (Express) |
+- Angular 21
+- Supabase (PostgreSQL and Auth)
+- Groq API for AI features
+- Tailwind CSS
+- Deployed on Vercel
 
 ---
 
 ## Pages
 
-| Route | Component | Description |
+| Route | Page | Description |
 |---|---|---|
-| `/summary` | Daily Summary | Goal rings, 7-day trend chart, date strip, entries list |
+| `/summary` | Daily Summary | Goal rings, 7-day trend chart, date strip, and entries list |
 | `/log` | Nutrition Log | Log and manage food entries by date |
-| `/foods` | Food Database | Manage the personal food library |
-| `/insights` | Insights | Placeholder for future AI-powered analysis |
-| `/profile` | Profile & Goals | Personal info and daily macro targets |
+| `/foods` | Food Database | Manage your food library, with AI autofill |
+| `/insights` | AI Insights | AI analysis, meal suggestions, and chat |
+| `/profile` | Profile and Goals | Personal details, daily targets, and the AI toggle |
+
+The older routes `/dashboard`, `/food-intake`, and `/food-facts` redirect to their current equivalents.
 
 ---
 
 ## Getting Started
 
+### 1. Set environment variables
+
+Create a `.env.local` file in the project root:
+
+```bash
+SUPABASE_URL=your-supabase-url
+SUPABASE_ANON_KEY=your-supabase-anon-key
+GROQ_API_KEY=your-groq-api-key
+```
+
+`SUPABASE_URL` and `SUPABASE_ANON_KEY` are written into `src/environments/environment.ts` by `scripts/generate-env.js`, which runs automatically during `npm run build`. `GROQ_API_KEY` is used by the API server for AI features.
+
+### 2. Install and run
+
 ```bash
 # Install dependencies
 npm install
 
-# Start the development server
+# Start the Angular dev server
 npm run start
+
+# In a second terminal, start the local API server for AI features
+npx tsx api/local-server.ts
 
 # Build for production
 npm run build
 ```
 
-The app will be available at `http://localhost:4200`.
+The app runs at `http://localhost:4200` and the API server runs at `http://localhost:3001`. The dev server forwards `/api` requests to the API server using `proxy.conf.json`.
+
+---
+
+## API
+
+The AI features are served by functions under `api/`. They run as Vercel serverless functions in production and through `api/local-server.ts` in development.
+
+| Endpoint | Description |
+|---|---|
+| `POST /api/ai/autofill-food` | Estimates nutrition facts for a given food name |
+| `POST /api/ai/insights` | Generates the nutrition analysis and answers chat questions |
+
+Both endpoints call the Groq API with `GROQ_API_KEY` and return structured JSON.
 
 ---
 
 ## Data Model
 
-### `FoodFact` table
-Stores the food library. Each row has `name`, `servingSize`, `unitOfMeasurement`, `calories`, `protein`, and `fiber` (all per one serving).
+### `FoodFact`
+Holds the food library. Each row stores `name`, `servingSize`, `unitOfMeasurement`, `calories`, `protein`, and `fiber`, all per serving.
 
-### `FoodIntake` table
-Each logged entry records `foodId`, `intakeSize` (the actual portion), and pre-computed `calorieIntake`, `proteinIntake`, and `fiberIntake` (scaled from the food's per-serving values by the ratio of portion to serving size). Linked to the authenticated user via `user_auth_id`.
+### `FoodIntake`
+Holds each logged entry. Each row stores `foodId`, `intakeSize` (the actual portion), and the precomputed `calorieIntake`, `proteinIntake`, and `fiberIntake`, scaled from the food's per-serving values by the ratio of portion to serving size. Entries link to the signed-in user through `user_auth_id`.
 
-### `user_profiles` table
-Stores the user's daily targets (`target_calories`, `target_protein`, `target_fiber`) and optional personal attributes. Keyed on `auth_id` with an upsert on conflict.
+### `user_profiles`
+Holds each user's daily targets (`target_calories`, `target_protein`, `target_fiber`) and optional personal details. Keyed on `auth_id` and upserted on conflict.
 
 ---
 
 ## PWA
 
-A `manifest.webmanifest` and app icons (including `apple-touch-icon`) are included, making the app installable on iOS, Android, and desktop browsers.
+The app ships with a `manifest.webmanifest` and app icons, including an `apple-touch-icon`, so it can be installed on iOS, Android, and desktop browsers.
